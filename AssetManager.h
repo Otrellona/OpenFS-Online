@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <string>
 #pragma once
 
 /*
@@ -11,22 +12,57 @@ Value Names:
 6) _p - Player Data
 */
 
+using namespace std;
+void CreateText(sf::Text &text, sf::Font &font, string txt, int size, sf::Color color) {
+    text.setFont(font);
+    text.setString(txt);
+    text.setCharacterSize(size);
+    text.setFillColor(color);
+}
 
 class AssetManager {
 public:
-    //UI
-	sf::Text balance_txt, tomato_storage_txt, tomato_seed_txt, header_txt, button_txt, amount_txt;
+    //Menu UI
+    sf::Texture logo_t, button_menu_t;
+    sf::Text button_newgame_txt, button_loadgame_txt, button_exitgame_txt;
+    sf::Sprite logo_s, button_newgame_s, button_loadgame_s, button_exitgame_s;
+
+    void setMenuUi() {
+        //Text
+        CreateText(button_newgame_txt, font, "New Farm", 24, sf::Color::Black);
+        CreateText(button_newgame_txt, font, "Load Farm", 24, sf::Color::Black);
+        CreateText(button_exitgame_txt, font, "Exit", 24, sf::Color::Black);
+
+        //Textures
+        logo_t.loadFromFile("textures/ui/logo.png");
+        button_menu_t.loadFromFile("textures/ui/button.png");
+
+        //Sprites
+        logo_s.setTexture(logo_t);
+        logo_s.setOrigin(150, 40);
+        logo_s.setPosition(640, 500);
+    }
+
+    //Game UI
     sf::Font font;
 
-    sf::Texture shovel_t, tomato_seed_t, basket_t, storage_t, market_t, shop_t, exit_but_t, back_panel_t, tomato_t;
-    sf::Sprite shovel_s, tomato_seed_s, basket_s, storage_s, market_s, shop_s, exit_but_s, back_panel_s, tomato_s;
-
-    sf::Sprite tomato_cursor_s, shovel_cursor_s, basket_cursor_s;
-
+    //Trading panel
     sf::Texture l_arrow_t, r_arrow_t, button_t;
     sf::Sprite l_arrow_s, r_arrow_s, button_s;
 
-    sf::Sprite tomato_shop_s;
+    sf::Texture tomato_seed_t, storage_t, market_t, shop_t, exit_but_t, back_panel_t, tomato_t;
+    sf::Sprite tomato_seed_s, storage_s, market_s, shop_s, exit_but_s, back_panel_s, tomato_s, tomato_shop_s;
+
+    sf::Text tomato_storage_txt, header_txt, button_txt, amount_txt;
+
+    //Window
+    sf::Text balance_txt, tomato_seed_txt;
+
+    //Cursor
+    sf::Texture shovel_t, basket_t;
+    sf::Sprite shovel_s, basket_s;
+    sf::Sprite tomato_cursor_s, shovel_cursor_s, basket_cursor_s;
+
     //Audio
     sf::SoundBuffer dig_sound_b;
     sf::Sound dig_sound_a;
@@ -38,41 +74,21 @@ public:
     //Game Load
     void setGameUI(int money_p, int tomato_p, int tomato_seed_p) {
         font.loadFromFile("textures/font/arial.ttf");
-
-        //Balance
-        balance_txt.setString(std::to_string(money_p) + "$");
-        balance_txt.setFont(font);
-        balance_txt.setCharacterSize(24);
-        balance_txt.setFillColor(sf::Color::Black);
+        
+        //Text
+        CreateText(balance_txt, font, std::to_string(money_p) + "$", 24, sf::Color::Black);
         balance_txt.setPosition(10, 50);
 
-        //Tomato amount
-        tomato_storage_txt.setFont(font);
-        tomato_storage_txt.setString(std::to_string(tomato_p));
-        tomato_storage_txt.setCharacterSize(24);
-        tomato_storage_txt.setFillColor(sf::Color::Black);
+        CreateText(tomato_storage_txt, font, std::to_string(tomato_p), 24, sf::Color::Black);
 
-        //Tomato Seed Amount
-        tomato_seed_txt.setFont(font);
-        tomato_seed_txt.setString(std::to_string(tomato_seed_p));
-        tomato_seed_txt.setCharacterSize(24);
-        tomato_seed_txt.setFillColor(sf::Color::Black);
+        CreateText(tomato_seed_txt, font, std::to_string(tomato_seed_p), 24, sf::Color::Black);
         tomato_seed_txt.setPosition(550, 560);
 
-        //Header
-        header_txt.setFont(font);
-        header_txt.setCharacterSize(24);
-        header_txt.setFillColor(sf::Color::Black);
+        CreateText(header_txt, font, "", 24, sf::Color::Black);
 
-        //Button Text
-        button_txt.setFont(font);
-        button_txt.setCharacterSize(24);
-        button_txt.setFillColor(sf::Color::Black);
+        CreateText(button_txt, font, "", 24, sf::Color::Black);
 
-        //Amount
-        amount_txt.setFont(font);
-        amount_txt.setCharacterSize(24);
-        amount_txt.setFillColor(sf::Color::Black);
+        CreateText(amount_txt, font, "", 24, sf::Color::Black);
 
         //Textures
         shovel_t.loadFromFile("textures/ui/shovel.png");
@@ -195,6 +211,13 @@ public:
     }
 
     void DrawUI(sf::RenderWindow* window) {
+        //Menu
+        window->draw(logot_s);
+        window->draw(button_newgame_s);
+        window->draw(button_loadgame_s);
+        window->draw(button_exitgame_s);
+
+        //Game
         window->draw(balance_txt);
         window->draw(tomato_seed_txt);
 

@@ -141,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="GenerationManager.h" />
     <ClInclude Include="PlayerManager.h" />
     <ClInclude Include="ShopManager.h" />
     <ClInclude Include="TileManager.h" />

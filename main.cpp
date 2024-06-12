@@ -5,9 +5,8 @@
 #include <string>
 #include <windows.h>
 
-#include "GenerationManager.h"
-#include "PlayerManager.h"
 #include "AssetManager.h"
+#include "PlayerManager.h"
 #include "TileManager.h"
 #include "ShopManager.h"
 
@@ -74,9 +73,8 @@ void setCursor(sf::RenderWindow &window, sf::Sprite &cur_s, float &x, float &y, 
 int main()
 {
     //Set managers
-    GenerationManager ge;
-    PlayerManager pl{};
     AssetManager as;
+    PlayerManager pl{};
     TileManager ti;
     ShopManager sh;
 

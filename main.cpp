@@ -21,42 +21,32 @@ void HideConsole()
 }
 
 //Game Funcs
-void Buy(PlayerManager &pl, int &product_p, int &product_amount, int &cost, sf::Text &amount_txt, sf::Text &button_txt, sf::Text &product_storage_txt, sf::Text &balance_txt) {
-    product_p += product_amount;
-    product_storage_txt.setString(std::to_string(product_p));
-
-    pl.money_p -= product_amount * cost;
-    product_amount = 0;
-
-    amount_txt.setString(std::to_string(0));
-    button_txt.setString("Buy for " + std::to_string(product_amount * cost) + "$");
+void Gather(TileManager &tile, sf::Texture &tile_t, PlayerManager &pl, sf::Text &balance_txt, sf::Texture &rot_t, int &cost, int &growtime, sf::Sound& snd) {
+    pl.money_p += cost;
     balance_txt.setString(std::to_string(pl.money_p) + "$");
-}
-
-void Sell(PlayerManager &pl, int &product_p, int &product_amount, int &cost, sf::Text& amount_txt, sf::Text& button_txt, sf::Text& product_storage_txt, sf::Text& balance_txt) {
-    pl.money_p += product_amount * cost;
-    product_p -= product_amount;
-    product_amount = 0;
-
-    amount_txt.setString(std::to_string(0));
-    button_txt.setString("Sell for " + std::to_string(product_amount * cost) + "$");
-    balance_txt.setString(std::to_string(pl.money_p) + "$");
-    product_storage_txt.setString(std::to_string(product_p));
-}
-
-void Gather(TileManager &tile, sf::Texture &tile_t, int &product_p, sf::Text &product_amount_txt) {
-    tile.tile.setTexture(tile_t);
-    product_p += 1;
-    product_amount_txt.setString(std::to_string(product_p));
-    tile.growtime = tile.tomato_grow_time;
-}
-
-void Plant(TileManager &tile, sf::Texture& tile_t, int &plant_product_p, sf::Text &product_storage_txt) {
-    plant_product_p -= 1;
-    product_storage_txt.setString(std::to_string(plant_product_p));
 
     tile.tile.setTexture(tile_t);
-    tile.growtime = 10;
+    tile.growtime = growtime;
+    tile.lives -= 1;
+    snd.play();
+
+    if (tile.lives == 0) {
+        tile.growtime = -1;
+        tile.tile.setTexture(rot_t);
+    }
+
+}
+
+void Plant(TileManager &tile, sf::Texture &tile_t, sf::Text &balance_txt, PlayerManager &pl, int &cost, sf::Sound &snd) {
+    if (pl.money_p >= cost) {
+        pl.money_p -= cost;
+        balance_txt.setString(std::to_string(pl.money_p) + "$");
+
+        tile.tile.setTexture(tile_t);
+        tile.growtime = 10;
+        tile.lives = 3;
+        snd.play();
+    }
 }
 
 void setCursor(sf::RenderWindow &window, sf::Sprite &cur_s, float &x, float &y, bool isOn) {
@@ -89,28 +79,26 @@ int main()
     HideConsole();
 
     //Load Game Assets
-    as.setGameUI(pl.money_p, pl.tomato_p, pl.tomato_seed_p);
+    as.setGameUI(pl.money_p);
+    as.setMenuUi();
     as.setAudio();
     as.setTiles();
-
-    //Game
-    const int level[] =
-    {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        1, 0, 0, 0, 1, 0, 0, 0, 0, 0,
-        0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
-        0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
-        0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
-        0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
-        0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
-        0, 1, 1, 1, 0, 0, 0, 0, 0, 0,
-    };
 
 
     //Map generating
     TileManager TileList[100];
+
+    int level[100];
+    for (int i = 0; i < std::size(level); i++) {
+        int start = 0;
+        int end = 10;
+        int x = rand() % (end - start + 1) + start;
+
+        if (x < 3)
+            level[i] = 1;
+        else
+            level[i] = 0;
+    }
 
     unsigned int n = 0;
     for (unsigned int i = 0; i < 10; i++)
@@ -127,7 +115,7 @@ int main()
             }
 
             else {
-                ti.tile.setTexture(as.water_t);
+                ti.tile.setTexture(as.water_0_t);
                 ti.isWater = true;
             }
 
@@ -147,14 +135,7 @@ int main()
     bool isShovel = false;
     bool isBasket = false;
 
-    bool isStorage = false;
-    bool isMarket = false;
-    bool isShop = false;
-
-    int tomato_choose = 0;
-    int tomato_seed_choose = 0;
-
-    sf::Sprite GameUiButtons[3]{as.shovel_s, as.tomato_seed_s, as.basket_s};
+    sf::Sprite GameUiButtons[3]{as.shovel_s, as.basket_s, as.seed_s};
 
     static sf::Clock clockGrow;
     static sf::Clock clockAnim;
@@ -183,59 +164,21 @@ int main()
         }
 
         //AnimSystem
-        if (clockAnim.getElapsedTime().asMilliseconds() > 0)
-        {
-            for (unsigned int i = 0; i < std::size(TileList); i++)
-                if (TileList[i].isWater) TileList[i].tile.setTexture(as.water_0_t);
-        }
-
-        if (clockAnim.getElapsedTime().asMilliseconds() > 300)
+        if (clockAnim.getElapsedTime().asSeconds() > 1)
         {
             for (unsigned int i = 0; i < std::size(TileList); i++)
                 if (TileList[i].isWater) TileList[i].tile.setTexture(as.water_1_t);
         }
 
-        if (clockAnim.getElapsedTime().asMilliseconds() > 500)
+        if (clockAnim.getElapsedTime().asSeconds() > 2)
         {
             for (unsigned int i = 0; i < std::size(TileList); i++)
-                if (TileList[i].isWater) TileList[i].tile.setTexture(as.water_2_t);
-        }
-
-        if (clockAnim.getElapsedTime().asMilliseconds() > 600)
-        {
-            for (unsigned int i = 0; i < std::size(TileList); i++)
-                if (TileList[i].isWater) TileList[i].tile.setTexture(as.water_3_t);
-        }
-
-        if (clockAnim.getElapsedTime().asMilliseconds() > 700)
-        {
-            for (unsigned int i = 0; i < std::size(TileList); i++)
-                if (TileList[i].isWater) TileList[i].tile.setTexture(as.water_4_t);
-        }
-
-        if (clockAnim.getElapsedTime().asMilliseconds() > 800)
-        {
-            for (unsigned int i = 0; i < std::size(TileList); i++)
-                if (TileList[i].isWater) TileList[i].tile.setTexture(as.water_3_t);
-        }
-
-        if (clockAnim.getElapsedTime().asMilliseconds() > 1000)
-        {
-            for (unsigned int i = 0; i < std::size(TileList); i++)
-                if (TileList[i].isWater) TileList[i].tile.setTexture(as.water_2_t);
-        }
-
-        if (clockAnim.getElapsedTime().asMilliseconds() > 1400)
-        {
-            for (unsigned int i = 0; i < std::size(TileList); i++)
-                if(TileList[i].isWater) TileList[i].tile.setTexture(as.water_1_t);
+                if(TileList[i].isWater) TileList[i].tile.setTexture(as.water_0_t);
 
             clockAnim.restart();
         } 
 
        
-
-
         sf::Event event;
 
         while (window.pollEvent(event))
@@ -261,80 +204,46 @@ int main()
             else
                 setCursor(window, as.basket_cursor_s, mousePositionFloat.x, mousePositionFloat.y, false);
 
-
-            //Places
-            if (isStorage == true || isMarket == true || isShop == true)
-                as.setTradePanel();
-
-            else
-                as.closeTradePanel();
-
-
-            //Storage
-            if (isStorage == true)
-            {
-                as.tomato_storage_txt.setPosition(950, 40);
-                as.tomato_s.setPosition(900, 40);
-
-                as.header_txt.setString("Storage");
-            }
-
-            else {
-                as.tomato_storage_txt.setPosition(-100, -100);
-                as.tomato_s.setPosition(-100, -100);
-            }
-
-            //Market
-            if (isMarket == true)
-            {
-                as.header_txt.setString("Market");
-
-                as.l_arrow_s.setPosition(950, 100);
-                as.r_arrow_s.setPosition(1100, 100);
-                as.button_s.setPosition(1000, 150);
-                as.amount_txt.setPosition(1000, 100);
-                as.tomato_s.setPosition(1000, 50);
-                as.button_txt.setPosition(1000, 150);
-                as.tomato_s.setTexture(as.tomato_t);
-                as.button_txt.setString("Sell for " + std::to_string(tomato_choose * sh.tomato_sell_cost) + "$");
-                as.amount_txt.setString(std::to_string(tomato_choose));
-            }
-
-            //Shop
-            if (isShop == true)
-                as.setShop(tomato_seed_choose);
-
-
-
-
-            
             if (pr == false) //переменная, определяющая "нажатость" клавиши
             {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
                 {
-                    //UI Clicking
+                    //Menu UI Clicking 
+                    if (as.button_newgame_s.getGlobalBounds().contains(mousePositionFloat))
+                        as.CloseMenu();
+
+                    if (as.button_exitgame_s.getGlobalBounds().contains(mousePositionFloat))
+                        window.close();
+
+                    if (as.pause_s.getGlobalBounds().contains(mousePositionFloat) && !as.back_s.getGlobalBounds().contains(mousePositionFloat)) {
+                        as.setMenuUi();
+                        as.button_newgame_txt.setString("Continue Farming");
+                        as.button_newgame_txt.move(-40, 0);
+                    }
+
+                    //Game UI Clicking
                     for (int i = 0; i < std::size(GameUiButtons); i++) {
-                        if (GameUiButtons[i].getGlobalBounds().contains(mousePositionFloat)) {
+                        if (GameUiButtons[i].getGlobalBounds().contains(mousePositionFloat) && !as.back_s.getGlobalBounds().contains(mousePositionFloat)) {
                             switch (i)
                             {
                             //Shovel
                             case 0:
                                 isShovel = !isShovel;
+                                isBasket = false;
                                 isTomato = false;
-                                isBasket = false;
                                 break;
-                            //Tomato
-                            case 1:
-                                isTomato = !isTomato;
-                                isShovel = false;
-                                isBasket = false;
-                                break;
-                                pr = true;
                             //Basket
-                            case 2:
-                                isTomato = false;
+                            case 1:
                                 isShovel = false;
                                 isBasket = !isBasket;
+                                isTomato = false;
+                                break;
+                                pr = true;
+                            //Seed
+                            case 2:
+                                isShovel = false;
+                                isBasket = false;
+                                isTomato = !isTomato;
                                 break;
                             }
                             pr = true;
@@ -342,101 +251,25 @@ int main()
 
                     }
 
-                    if (as.storage_s.getGlobalBounds().contains(mousePositionFloat)) {
-                        isStorage = true;
-                        isMarket = false;
-                        isShop = false;
-
-                        isTomato = false;
-                        isShovel = false;
-                        isBasket = false; 
-                    }
-
-                    if (as.market_s.getGlobalBounds().contains(mousePositionFloat)) {
-                        isStorage = false;
-                        isMarket = true;
-                        isShop = false;
-
-                        isTomato = false;
-                        isShovel = false;
-                        isBasket = false;
-                    }
-
-                    if (as.shop_s.getGlobalBounds().contains(mousePositionFloat)) {
-                        isStorage = false;
-                        isMarket = false;
-                        isShop = true;
-
-                        isTomato = false;
-                        isShovel = false;
-                        isBasket = false;
-                    }
-
-                    if (as.exit_but_s.getGlobalBounds().contains(mousePositionFloat)) {
-                        isStorage = false;
-                        isMarket = false;
-                        isShop = false;
-                    }
-
-                    if (as.l_arrow_s.getGlobalBounds().contains(mousePositionFloat)) { 
-                        if (isMarket && tomato_choose > 0) {
-                            tomato_choose -= 1;
-                            as.button_txt.setString("Sell for " + std::to_string(tomato_choose * 2.5f) + "$");
-                            as.amount_txt.setString(std::to_string(tomato_choose));
-                        }
-
-                        if (isShop) {
-                            tomato_seed_choose -= 1;
-                            as.button_txt.setString("Buy for " + std::to_string(tomato_choose * 5) + "$");
-                            as.amount_txt.setString(std::to_string(tomato_seed_choose));
-                        }
-                        pr = true;
-                    }
-
-                    if (as.r_arrow_s.getGlobalBounds().contains(mousePositionFloat)) {
-                        if (isMarket && tomato_choose < pl.tomato_p) {
-                            tomato_choose += 1;
-                            as.button_txt.setString("Sell for " + std::to_string(tomato_choose * 2.5f) + "$");
-                            as.amount_txt.setString(std::to_string(tomato_choose));
-                        }
-
-                        if (isShop) {
-                            tomato_seed_choose += 1;
-                            as.button_txt.setString("Buy for " + std::to_string(tomato_choose * 5) + "$");
-                            as.amount_txt.setString(std::to_string(tomato_seed_choose));
-                        }
-                        pr = true;
-                    }
-
-                    //If press Buy/Sell Button
-                    if (as.button_s.getGlobalBounds().contains(mousePositionFloat)) {
-                        if (isMarket) 
-                            Sell(pl, pl.tomato_p, tomato_choose, sh.tomato_sell_cost, as.amount_txt, as.button_txt, as.tomato_storage_txt, as.balance_txt);
-
-                        if (isShop && pl.money_p >= tomato_seed_choose * sh.tomato_seed_buy_cost)
-                            Buy(pl, pl.tomato_seed_p, tomato_seed_choose, sh.tomato_seed_buy_cost, as.amount_txt, as.button_txt, as.tomato_seed_txt, as.balance_txt);
-
-                        pr = true;
-                    }
 
                     //Editing Tiles
                     for (unsigned int i = 0; i < std::size(TileList); i++)
                     {
-                        if (TileList[i].tile.getGlobalBounds().contains(mousePositionFloat))
+                        if (TileList[i].tile.getGlobalBounds().contains(mousePositionFloat) && !as.panel_s.getGlobalBounds().contains(mousePositionFloat))
                         {
                             //Dig bed
-                            if (isShovel == true && TileList[i].tile.getTexture() != &as.water_t && TileList[i].tile.getTexture() == &as.grass_t) {
+                            if (isShovel == true && TileList[i].isWater == false && (TileList[i].tile.getTexture() == &as.grass_t || TileList[i].tile.getTexture() == &as.tomato_bed_rot_t)) {
                                 TileList[i].tile.setTexture(as.dirt_t);
                                 as.dig_sound_a.play();
                             }
 
                             //Plant tomato
-                            if (isTomato == true && TileList[i].tile.getTexture() != &as.water_t && TileList[i].tile.getTexture() == &as.dirt_t && pl.tomato_seed_p != 0)
-                                Plant(TileList[i], as.tomato_bed_1_t, pl.tomato_seed_p, as.tomato_seed_txt);
+                            if (isTomato == true && TileList[i].isWater == false && TileList[i].tile.getTexture() == &as.dirt_t)
+                                Plant(TileList[i], as.tomato_bed_1_t, as.balance_txt, pl, sh.tomato_seed_buy_cost, as.plant_sound_a);
 
                             //Gather tomato
                             if (isBasket && TileList[i].tile.getTexture() == &as.tomato_bed_3_t)
-                                Gather(TileList[i], as.tomato_bed_1_t, pl.tomato_p, as.tomato_storage_txt);
+                                Gather(TileList[i], as.tomato_bed_1_t, pl, as.balance_txt, as.tomato_bed_rot_t, sh.tomato_sell_cost, TileList[i].tomato_grow_time, as.gather_sound_a);
                         }
                     }
                     pr = true;

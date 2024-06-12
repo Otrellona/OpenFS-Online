@@ -43,12 +43,19 @@ void Sell(PlayerManager &pl, int &product_p, int &product_amount, int &cost, sf:
     product_storage_txt.setString(std::to_string(product_p));
 }
 
-void Gather() {
-
+void Gather(TileManager &tile, sf::Texture &tile_t, int &product_p, sf::Text &product_amount_txt) {
+    tile.tile.setTexture(tile_t);
+    product_p += 1;
+    product_amount_txt.setString(std::to_string(product_p));
+    tile.growtime = tile.tomato_grow_time;
 }
 
-void Plant() {
+void Plant(TileManager &tile, sf::Texture& tile_t, int &plant_product_p, sf::Text &product_storage_txt) {
+    plant_product_p -= 1;
+    product_storage_txt.setString(std::to_string(plant_product_p));
 
+    tile.tile.setTexture(tile_t);
+    tile.growtime = 10;
 }
 
 void setCursor(sf::RenderWindow &window, sf::Sprite &cur_s, float &x, float &y, bool isOn) {
@@ -303,6 +310,7 @@ int main()
             {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
                 {
+                    //UI Clicking
                     for (int i = 0; i < std::size(GameUiButtons); i++) {
                         if (GameUiButtons[i].getGlobalBounds().contains(mousePositionFloat)) {
                             switch (i)
@@ -409,9 +417,6 @@ int main()
                         pr = true;
                     }
 
-
-
-
                     //Editing Tiles
                     for (unsigned int i = 0; i < std::size(TileList); i++)
                     {
@@ -423,59 +428,41 @@ int main()
                                 as.dig_sound_a.play();
                             }
 
-                            //Set tomato
-                            if (isTomato == true && TileList[i].tile.getTexture() != &as.water_t && TileList[i].tile.getTexture() == &as.dirt_t && pl.tomato_seed_p != 0) {
-                                pl.tomato_seed_p -= 1;
-                                as.tomato_seed_txt.setString(std::to_string(pl.tomato_seed_p));
-
-                                
-                                TileList[i].tile.setTexture(as.tomato_bed_1_t);
-                                TileList[i].growtime = 10;
-                            }
+                            //Plant tomato
+                            if (isTomato == true && TileList[i].tile.getTexture() != &as.water_t && TileList[i].tile.getTexture() == &as.dirt_t && pl.tomato_seed_p != 0)
+                                Plant(TileList[i], as.tomato_bed_1_t, pl.tomato_seed_p, as.tomato_seed_txt);
 
                             //Gather tomato
-                            if (isBasket && TileList[i].tile.getTexture() == &as.tomato_bed_3_t) {
-                                TileList[i].tile.setTexture(as.tomato_bed_1_t);
-                                pl.tomato_p += 1;
-                                as.tomato_storage_txt.setString(std::to_string(pl.tomato_p));
-                                TileList[i].growtime = 10;
-                            }
+                            if (isBasket && TileList[i].tile.getTexture() == &as.tomato_bed_3_t)
+                                Gather(TileList[i], as.tomato_bed_1_t, pl.tomato_p, as.tomato_storage_txt);
                         }
                     }
                     pr = true;
                 }
 
                 //Close game
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
                     window.close();
-                }
 
-                //Close game
+                //Camera
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-                    for (unsigned int i = 0; i < std::size(TileList); i++) {
+                    for (unsigned int i = 0; i < std::size(TileList); i++) 
                         TileList[i].tile.move(0, 25);
-                    }
                 }
 
-                //Close game
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-                    for (unsigned int i = 0; i < std::size(TileList); i++) {
+                    for (unsigned int i = 0; i < std::size(TileList); i++)
                         TileList[i].tile.move(-25, 0);
-                    }
                 }
 
-                //Close game
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-                    for (unsigned int i = 0; i < std::size(TileList); i++) {
+                    for (unsigned int i = 0; i < std::size(TileList); i++) 
                         TileList[i].tile.move(0, -25);
-                    }
                 }
 
-                //Close game
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-                    for (unsigned int i = 0; i < std::size(TileList); i++) {
+                    for (unsigned int i = 0; i < std::size(TileList); i++) 
                         TileList[i].tile.move(25, 0);
-                    }
                 }
             }
             else if (event.type == sf::Event::MouseButtonReleased || event.type == sf::Event::KeyReleased) pr = false;
@@ -487,9 +474,7 @@ int main()
 
         //Tiles
         for (unsigned int i = 0; i < std::size(TileList); i++)
-        {
             window.draw(TileList[i].tile);
-        }
 
         //UI
         as.DrawUI(&window);

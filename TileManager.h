@@ -6,4 +6,6 @@ public:
 	sf::Sprite tile;
 	int growtime;
 	bool isWater;
+
+	int tomato_grow_time = 10;
 };

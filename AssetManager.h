@@ -62,11 +62,11 @@ public:
     //Game UI
     sf::Font font;
 
-    sf::Texture seed_t, tomato_t, pause_t, balance_icon_t, panel_t;
-    sf::Sprite seed_s, tomato_s, pause_s, balance_icon_s, panel_s;
+    sf::Texture seed_t, tomato_t, pause_t, balance_icon_t, worker_icon_t, panel_t;
+    sf::Sprite seed_s, tomato_s, pause_s, balance_icon_s, worker_icon_s, panel_s;
 
     //Window
-    sf::Text balance_txt;
+    sf::Text balance_txt, worker_txt;
 
     //Cursor
     sf::Texture shovel_t, basket_t;
@@ -78,11 +78,13 @@ public:
     sf::Sound dig_sound_a, plant_sound_a, gather_sound_a;
 
     //Tiles
-    sf::Texture grass_t, dirt_t, tomato_bed_1_t, tomato_bed_2_t, tomato_bed_3_t, tomato_bed_rot_t;
+    sf::Texture grass_t, dirt_t, tomato_bed_1_t, tomato_bed_2_t, tomato_bed_3_t, tomato_bed_rot_t, house_t;
+    sf::Texture grass_clock_t;
     sf::Texture water_0_t, water_1_t;
+    sf::Sprite house_s;
 
     //Game Load
-    void setGameUI(int money_p) {
+    void setGameUI(int money_p, int max_worker) {
         //Font
         font.loadFromFile("textures/font/arial.ttf");
 
@@ -90,9 +92,13 @@ public:
         CreateText(balance_txt, font, std::to_string(money_p) + "$", 36, sf::Color::Black);
         balance_txt.setPosition(121, 660);
 
+        CreateText(worker_txt, font, std::to_string(max_worker) + "/" + std::to_string(max_worker), 36, sf::Color::Black);
+        worker_txt.setPosition(121, 570);
+
         //Textures
         pause_t.loadFromFile("textures/ui/pause.png");
         balance_icon_t.loadFromFile("textures/ui/balance_icon.png"); 
+        worker_icon_t.loadFromFile("textures/ui/worker.png");
         panel_t.loadFromFile("textures/ui/panel.png");
         shovel_t.loadFromFile("textures/ui/shovel.png");
         seed_t.loadFromFile("textures/ui/seed.png");
@@ -111,6 +117,7 @@ public:
         //Sprites
         pause_s.setTexture(pause_t);
         balance_icon_s.setTexture(balance_icon_t);
+        worker_icon_s.setTexture(worker_icon_t);
         panel_s.setTexture(panel_t);
         shovel_s.setTexture(shovel_t);
         seed_s.setTexture(seed_t);
@@ -121,6 +128,7 @@ public:
         
         pause_s.setPosition(4, 4);
         balance_icon_s.setPosition(6, 637);
+        worker_icon_s.setPosition(6, 537);
         panel_s.setPosition(425, 629);
         shovel_s.setPosition(451, 644);
         basket_s.setPosition(578, 644);
@@ -162,12 +170,19 @@ public:
 
         water_0_t.loadFromFile("textures/tiles/water_0.png");
         water_1_t.loadFromFile("textures/tiles/water_1.png");
+
+        grass_clock_t.loadFromFile("textures/tiles/grass_clock.png");
+
+        house_t.loadFromFile("textures/tiles/house.png");
+        house_s.setTexture(house_t);
     }
 
     void DrawUI(sf::RenderWindow* window) {
         //Game
         window->draw(balance_txt);
         window->draw(balance_icon_s);
+        window->draw(worker_txt);
+        window->draw(worker_icon_s);
         window->draw(pause_s);
 
         window->draw(panel_s);

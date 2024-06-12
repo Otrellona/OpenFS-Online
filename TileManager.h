@@ -4,9 +4,14 @@
 class TileManager {
 public:
 	sf::Sprite tile;
-	int growtime;
+
 	int lives;
+	int growtime;
+	int tomato_grow_time = 10;
+
 	bool isWater;
 
-	int tomato_grow_time = 10;
+	int digtime;
+	int planttime;
+	int gathertime;
 };

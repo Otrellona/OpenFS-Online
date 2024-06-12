@@ -17,7 +17,7 @@ void HideConsole()
     HWND Hide;
     AllocConsole();
     Hide = FindWindowA("ConsoleWindowClass", NULL);
-    ShowWindow(Hide, 0);
+    ShowWindow(Hide, 1);
 }
 
 //Game Funcs
@@ -37,13 +37,13 @@ void Gather(TileManager &tile, sf::Texture &tile_t, PlayerManager &pl, sf::Text 
 
 }
 
-void Plant(TileManager &tile, sf::Texture &tile_t, sf::Text &balance_txt, PlayerManager &pl, int &cost, sf::Sound &snd) {
+void Plant(TileManager &tile, sf::Texture &tile_t, sf::Text &balance_txt, PlayerManager &pl, int &cost, int &growtime, sf::Sound &snd) {
     if (pl.money_p >= cost) {
         pl.money_p -= cost;
         balance_txt.setString(std::to_string(pl.money_p) + "$");
 
         tile.tile.setTexture(tile_t);
-        tile.growtime = 10;
+        tile.growtime = growtime;
         tile.lives = 3;
         snd.play();
     }
@@ -79,7 +79,7 @@ int main()
     HideConsole();
 
     //Load Game Assets
-    as.setGameUI(pl.money_p);
+    as.setGameUI(pl.money_p, pl.max_worker);
     as.setMenuUi();
     as.setAudio();
     as.setTiles();
@@ -123,6 +123,9 @@ int main()
 
             //Values of tile
             ti.growtime = -1;
+            ti.digtime = -1;
+            ti.planttime = -1;
+            ti.gathertime = -1;
             TileList[n] = ti;
 
             n += 1;
@@ -134,11 +137,13 @@ int main()
     bool isTomato = false;
     bool isShovel = false;
     bool isBasket = false;
+    bool isBuild = false;
 
     sf::Sprite GameUiButtons[3]{as.shovel_s, as.basket_s, as.seed_s};
 
     static sf::Clock clockGrow;
     static sf::Clock clockAnim;
+    static sf::Clock clockBuild;
 
     while (window.isOpen())
     {
@@ -177,6 +182,27 @@ int main()
 
             clockAnim.restart();
         } 
+
+        //BuildSystem
+        if (clockBuild.getElapsedTime().asSeconds() > 1)
+        {
+            for (unsigned int i = 0; i < std::size(TileList); i++) {
+                if (TileList[i].digtime != -1) {
+                    TileList[i].digtime -= 1;
+                }
+
+
+                if (TileList[i].digtime == 0) {
+                    TileList[i].tile.setTexture(as.dirt_t);
+                    TileList[i].digtime = -1;
+
+                    pl.cur_worker += 1;
+                    as.worker_txt.setString(std::to_string(pl.cur_worker) + "/" + std::to_string(pl.max_worker));
+                }
+            }
+
+            clockBuild.restart();
+        }
 
        
         sf::Event event;
@@ -255,17 +281,22 @@ int main()
                     //Editing Tiles
                     for (unsigned int i = 0; i < std::size(TileList); i++)
                     {
-                        if (TileList[i].tile.getGlobalBounds().contains(mousePositionFloat) && !as.panel_s.getGlobalBounds().contains(mousePositionFloat))
+                        if (TileList[i].tile.getGlobalBounds().contains(mousePositionFloat) && !as.panel_s.getGlobalBounds().contains(mousePositionFloat) && pl.cur_worker != 0)
                         {
                             //Dig bed
-                            if (isShovel == true && TileList[i].isWater == false && (TileList[i].tile.getTexture() == &as.grass_t || TileList[i].tile.getTexture() == &as.tomato_bed_rot_t)) {
-                                TileList[i].tile.setTexture(as.dirt_t);
+                            if (isShovel == true && (TileList[i].tile.getTexture() == &as.grass_t || TileList[i].tile.getTexture() == &as.tomato_bed_rot_t)) {
+                                TileList[i].digtime = 3;
+                                TileList[i].tile.setTexture(as.grass_clock_t);
+
+                                pl.cur_worker -= 1;
+                                as.worker_txt.setString(std::to_string(pl.cur_worker) + "/" + std::to_string(pl.max_worker));
+
                                 as.dig_sound_a.play();
                             }
 
                             //Plant tomato
-                            if (isTomato == true && TileList[i].isWater == false && TileList[i].tile.getTexture() == &as.dirt_t)
-                                Plant(TileList[i], as.tomato_bed_1_t, as.balance_txt, pl, sh.tomato_seed_buy_cost, as.plant_sound_a);
+                            if (isTomato == true && TileList[i].tile.getTexture() == &as.dirt_t)
+                                Plant(TileList[i], as.tomato_bed_1_t, as.balance_txt, pl, sh.tomato_seed_buy_cost, TileList[i].tomato_grow_time, as.plant_sound_a);
 
                             //Gather tomato
                             if (isBasket && TileList[i].tile.getTexture() == &as.tomato_bed_3_t)

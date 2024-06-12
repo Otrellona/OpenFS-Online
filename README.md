@@ -1,2 +1,2 @@
 # OpenFS
-## Бляяяя Ох Еёёёёёёё
+## 2D Online Farming Strategy

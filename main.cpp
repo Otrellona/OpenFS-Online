@@ -77,7 +77,7 @@ int main()
     pl.NewGameSettings();
 
     //Window
-    sf::RenderWindow window(sf::VideoMode(Width, Height), "Open Farm Simulator", sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(width, height), "Open Farm Simulator", sf::Style::Close);
     window.setFramerateLimit(60);
     HideConsole();
 
@@ -314,22 +314,22 @@ int main()
                     window.close();
 
                 //Camera
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && sqrt(std::size(tileList)) * 100 <= height) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && sqrt(std::size(tileList)) * 100 >= height) {
                     for (unsigned int i = 0; i < std::size(TileList); i++) 
                         TileList[i].tile.move(0, 25);
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && sqrt(std::size(tileList)) * 100 <= width) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && sqrt(std::size(tileList)) * 100 >= width) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
                         TileList[i].tile.move(-25, 0);
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sqrt(std::size(tileList)) * 100 <= height) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sqrt(std::size(tileList)) * 100 >= height) {
                     for (unsigned int i = 0; i < std::size(TileList); i++) 
                         TileList[i].tile.move(0, -25);
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && sqrt(std::size(tileList)) * 100 <= width) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && sqrt(std::size(tileList)) * 100 >= width) {
                     for (unsigned int i = 0; i < std::size(TileList); i++) 
                         TileList[i].tile.move(25, 0);
                 }

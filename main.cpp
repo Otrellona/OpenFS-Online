@@ -119,7 +119,7 @@ int main()
                 ti.isWater = true;
             }
 
-            ti.tile.setPosition(380 + i * 100, j * 100);
+            ti.tile.setPosition(140 + i * 100, j * 100);
 
             //Values of tile
             ti.growtime = -1;
@@ -230,7 +230,7 @@ int main()
             else
                 setCursor(window, as.basket_cursor_s, mousePositionFloat.x, mousePositionFloat.y, false);
 
-            if (pr == false) //переменная, определяющая "нажатость" клавиши
+            if (pr == false) //ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г Гї, Г®ГЇГ°ГҐГ¤ГҐГ«ГїГѕГ№Г Гї "Г­Г Г¦Г ГІГ®Г±ГІГј" ГЄГ«Г ГўГЁГёГЁ
             {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
                 {

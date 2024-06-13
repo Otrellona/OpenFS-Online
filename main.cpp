@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <windows.h>
+#include <cmath>
 
 #include "GenerationManager.h"
 #include "PlayerManager.h"

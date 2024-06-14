@@ -4,17 +4,16 @@
 #include <iostream>
 #include <string>
 #include <windows.h>
-#include <cmath>
 
 #include "GenerationManager.h"
 #include "PlayerManager.h"
 #include "AssetManager.h"
 #include "TileManager.h"
 #include "ShopManager.h"
+#include "icon.h"
 
-//constants
-int width = 1280;
-int height = 720;
+//variables
+const short side = 10;
 
 void HideConsole()
 {
@@ -80,6 +79,7 @@ int main()
     //Window
     sf::RenderWindow window(sf::VideoMode(width, height), "Open Farm Simulator", sf::Style::Close);
     window.setFramerateLimit(60);
+    window.setIcon(32, 32, MagickImage);
     HideConsole();
 
     //Load Game Assets
@@ -90,12 +90,12 @@ int main()
 
 
     //Map generating
-    TileManager TileList[100];
+    TileManager TileList[side*side];
 
-    int level[100];
+    int level[side*side];
     for (int i = 0; i < std::size(level); i++) {
         int start = 0;
-        int end = 10;
+        int end = side;
         int x = rand() % (end - start + 1) + start;
 
         if (x < 3)
@@ -105,8 +105,8 @@ int main()
     }
 
     unsigned int n = 0;
-    for (unsigned int i = 0; i < 10; i++)
-        for (unsigned int j = 0; j < 10; j++)
+    for (unsigned int i = 0; i < side; i++)
+        for (unsigned int j = 0; j < side; j++)
         {
             ti.tile.setScale(sf::Vector2f(1.f, 1.f));
             ti.tile.setTexture(as.grass_t);
@@ -123,7 +123,7 @@ int main()
                 ti.isWater = true;
             }
 
-            ti.tile.setPosition(140 + i * 100, j * 100);
+            ti.tile.setPosition((width-side*100)/2 + i * 100, j * 100);
 
             //Values of tile
             ti.growtime = -1;
@@ -168,7 +168,7 @@ int main()
                     TileList[i].growtime = -1;
                 }
             }
-            
+
             clockGrow.restart();
         }
 
@@ -208,7 +208,7 @@ int main()
             clockBuild.restart();
         }
 
-       
+
         sf::Event event;
 
         while (window.pollEvent(event))
@@ -315,23 +315,23 @@ int main()
                     window.close();
 
                 //Camera
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && sqrt(std::size(tileList)) * 100 >= height) {
-                    for (unsigned int i = 0; i < std::size(TileList); i++) 
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && side * 100 >= height) {
+                    for (unsigned int i = 0; i < std::size(TileList); i++)
                         TileList[i].tile.move(0, 25);
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && sqrt(std::size(tileList)) * 100 >= width) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && side * 100 >= width) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
                         TileList[i].tile.move(-25, 0);
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sqrt(std::size(tileList)) * 100 >= height) {
-                    for (unsigned int i = 0; i < std::size(TileList); i++) 
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && side * 100 >= height) {
+                    for (unsigned int i = 0; i < std::size(TileList); i++)
                         TileList[i].tile.move(0, -25);
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && sqrt(std::size(tileList)) * 100 >= width) {
-                    for (unsigned int i = 0; i < std::size(TileList); i++) 
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && side * 100 >= width) {
+                    for (unsigned int i = 0; i < std::size(TileList); i++)
                         TileList[i].tile.move(25, 0);
                 }
             }

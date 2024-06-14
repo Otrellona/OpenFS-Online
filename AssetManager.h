@@ -137,7 +137,7 @@ public:
         pause_s.setPosition(4, 4);
         balance_icon_s.setPosition(6, height-83);
         worker_icon_s.setPosition(6, height-183);
-        panel_s.setPosition((width-400)/2, height-91);
+        panel_s.setPosition((width-panel_s.getLocalBounds().width)/2, height-91);
         shovel_s.setPosition((width-72)/2-136, height-76);
         basket_s.setPosition((width-72)/2, height-76);
         seed_s.setPosition((width-72)/2+136, height-76);

@@ -5,7 +5,10 @@
 
 #include <iostream>
 #include <string>
+
+#ifndef unix
 #include <windows.h>
+#endif
 
 #include "NetworkClient.h"
 #include "GenerationManager.h"
@@ -27,10 +30,12 @@ vector<PlayerManager> playersVec;
 
 void HideConsole()
 {
+#ifndef unix
     HWND Hide;
     AllocConsole();
     Hide = FindWindowA("ConsoleWindowClass", NULL);
     ShowWindow(Hide, 1);
+#endif
 }
 
 //Game Funcs

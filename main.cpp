@@ -1,10 +1,11 @@
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <iostream>
 #include <string>
+#include <vector>
 
 #ifndef unix
 #include <windows.h>
@@ -90,9 +91,6 @@ int main()
     AssetManager as;
     TileManager ti;
     ShopManager sh;
-
-    //Player Values
-    pl.NewGameSettings();
 
     //Window
     sf::RenderWindow window(sf::VideoMode(width, height), "Open Farm Simulator", sf::Style::Close);
@@ -205,28 +203,31 @@ int main()
                     }
 
                     //Тут игра падает
-                    if (s == "DATA")
-                    {
-                        while (!receivedDataPacket.endOfPacket())
-                        {
-                            int x;
-                            receivedDataPacket >> s;
-                            receivedDataPacket >> x;
-                            for (int i = 0; i < playersVec.size(); i++)
-                            {
-                                if (s == playersVec[i].name)
-                                    playersVec[i].money_p = x;
-                            }
-                        }
-                    }
+                    //if (s == "DATA")
+                    //{
+                    //    while (!receivedDataPacket.endOfPacket())
+                    //    {
+                    //        float x, y;
+                    //        receivedDataPacket >> s;
+                    //        receivedDataPacket >> x;
+                    //        receivedDataPacket >> y;
+                    //        for (int i = 0; i < playersVec.size(); i++)
+                    //        {
+                    //            if (s == playersVec[i].name)
+                    //                x = playersVec[i].money_p;
+                    //        }
+                    //    }
+                    //}
                 }
             }
         }
 
         sendDataPacket.clear();
-        sendDataPacket << "DATA" << pl.money_p;
+        sendDataPacket << "DATA" << pl.money_p << pl.money_p;
         netC.sendData(sendDataPacket);
 
+        //Player Values
+        pl.NewGameSettings();
 
         //GrowSystem
         if (clockGrow.getElapsedTime().asSeconds() > 1)
@@ -484,5 +485,6 @@ void addPlayer(string clientName)
     PlayerManager p;
     playersVec.push_back(p);
     playersVec.back().name = clientName;
-    //playersVec.back().load(t_player, font);
+    //playersVec.back().load();
 };
+

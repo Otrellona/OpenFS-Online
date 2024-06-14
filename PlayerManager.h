@@ -25,8 +25,8 @@ public:
 		name_balance.setString(name + std::to_string(money_p));
 		name_balance.setCharacterSize(24);
 		name_balance.setFillColor(sf::Color::Black);
-		name_balance.setPosition(10, 15 * x);
 
+		name_balance.setPosition(10, 15 * x);
 		window.draw(name_balance);
 	};
 };

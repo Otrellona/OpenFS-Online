@@ -1,10 +1,13 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Audio.hpp>
+#include <SFML/Network.hpp>
+
 #include <iostream>
 #include <string>
 #include <windows.h>
 
+#include "NetworkClient.h"
 #include "GenerationManager.h"
 #include "PlayerManager.h"
 #include "AssetManager.h"
@@ -14,6 +17,13 @@
 
 //variables
 const short side = 10;
+
+IpAddress S_Ip;
+unsigned short S_port;
+string clientName;
+NetworkClient netC;
+
+vector<PlayerManager> playersVec;
 
 void HideConsole()
 {
@@ -64,6 +74,9 @@ void setCursor(sf::RenderWindow &window, sf::Sprite &cur_s, float &x, float &y, 
 
 }
 
+void getUserInputData(string& playerName);
+void addPlayer(string clientName);
+
 int main()
 {
     //Set managers
@@ -88,6 +101,22 @@ int main()
     as.setAudio();
     as.setTiles();
 
+    //Network
+    getUserInputData(pl.name);
+
+    netC.init();
+    netC.registerOnServer(S_Ip, S_port, pl.name);
+
+    vector<string> namesVec;
+    netC.receiveConnectedClientsNames(namesVec);
+
+    for (int i = 0; i < namesVec.size(); i++)
+    {
+        addPlayer(namesVec[i]);
+    }
+
+    Packet receivedDataPacket;
+    Packet sendDataPacket;
 
     //Map generating
     TileManager TileList[side*side];
@@ -143,7 +172,7 @@ int main()
     bool isBasket = false;
     bool isBuild = false;
 
-    sf::Sprite GameUiButtons[3]{as.shovel_s, as.basket_s, as.seed_s};
+    sf::Sprite GameUiButtons[4]{as.shovel_s, as.basket_s, as.seed_s, as.build_s};
 
     static sf::Clock clockGrow;
     static sf::Clock clockAnim;
@@ -151,6 +180,49 @@ int main()
 
     while (window.isOpen())
     {
+        if (netC.receiveData(receivedDataPacket, S_Ip, S_port) == Socket::Status::Done)
+        {
+            if (receivedDataPacket.getDataSize() > 0)
+            {
+                string s;
+                if (receivedDataPacket >> s)
+                {
+                    if (s == "NEW")
+                    {
+                        if (receivedDataPacket >> s)
+                        {
+                            if (s != clientName)
+                            {
+                                addPlayer(s);
+                                cout << "New player connected: " << playersVec.back().name << endl;
+                            }
+                        }
+                    }
+
+                    //Тут игра падает
+                    if (s == "DATA")
+                    {
+                        while (!receivedDataPacket.endOfPacket())
+                        {
+                            int x;
+                            receivedDataPacket >> s;
+                            receivedDataPacket >> x;
+                            for (int i = 0; i < playersVec.size(); i++)
+                            {
+                                if (s == playersVec[i].name)
+                                    playersVec[i].money_p = x;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        sendDataPacket.clear();
+        sendDataPacket << "DATA" << pl.money_p;
+        netC.sendData(sendDataPacket);
+
+
         //GrowSystem
         if (clockGrow.getElapsedTime().asSeconds() > 1)
         {
@@ -234,7 +306,12 @@ int main()
             else
                 setCursor(window, as.basket_cursor_s, mousePositionFloat.x, mousePositionFloat.y, false);
 
-            if (pr == false) //ïåðåìåííàÿ, îïðåäåëÿþùàÿ "íàæàòîñòü" êëàâèøè
+            if (isBuild)
+                setCursor(window, as.build_cursor_s, mousePositionFloat.x, mousePositionFloat.y, true);
+            else
+                setCursor(window, as.build_cursor_s, mousePositionFloat.x, mousePositionFloat.y, false);
+
+            if (pr == false)
             {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
                 {
@@ -261,19 +338,28 @@ int main()
                                 isShovel = !isShovel;
                                 isBasket = false;
                                 isTomato = false;
+                                isBuild = false;
                                 break;
                             //Basket
                             case 1:
                                 isShovel = false;
                                 isBasket = !isBasket;
                                 isTomato = false;
+                                isBuild = false;
                                 break;
-                                pr = true;
                             //Seed
                             case 2:
                                 isShovel = false;
                                 isBasket = false;
                                 isTomato = !isTomato;
+                                isBuild = false;
+                                break;
+                            //Build
+                            case 3:
+                                isShovel = false;
+                                isBasket = false;
+                                isTomato = false;
+                                isBuild = !isBuild;
                                 break;
                             }
                             pr = true;
@@ -305,14 +391,29 @@ int main()
                             //Gather tomato
                             if (isBasket && TileList[i].tile.getTexture() == &as.tomato_bed_3_t)
                                 Gather(TileList[i], as.tomato_bed_1_t, pl, as.balance_txt, as.tomato_bed_rot_t, sh.tomato_sell_cost, TileList[i].tomato_grow_time, as.gather_sound_a);
+
+                            //Build worker house
+                            if (isBuild && TileList[i].tile.getTexture() == &as.grass_t && pl.money_p >= 50) {
+                                pl.money_p -= 50;
+                                as.balance_txt.setString(std::to_string(pl.money_p) + "$");
+
+                                pl.max_worker += 1;
+                                pl.cur_worker += 1;
+                                as.worker_txt.setString(std::to_string(pl.cur_worker) + "/" + std::to_string(pl.max_worker));
+
+                                TileList[i].tile.setTexture(as.grass_house_t);
+                            }
                         }
                     }
                     pr = true;
                 }
 
                 //Close game
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-                    window.close();
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                    as.setMenuUi();
+                    as.button_newgame_txt.setString("Continue Farming");
+                    as.button_newgame_txt.move(-40, 0);
+                }
 
                 //Camera
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && side * 100 >= height) {
@@ -349,7 +450,34 @@ int main()
         //UI
         as.DrawUI(&window);
 
+        for (int i = 0; i < playersVec.size(); i++)
+        {
+            playersVec[i].draw(window, i);
+        }
+
+        pl.draw(window, 1);
+
         window.display();
     }
     return 0;
 }
+
+void getUserInputData(string& playerName)
+{
+    cout << "Enter server IP: ";
+    cin >> S_Ip;
+    cout << endl;
+    cout << "Enter server registration port: ";
+    cin >> S_port;
+    cout << endl;
+    cout << "Enter name: ";
+    cin >> playerName;
+};
+
+void addPlayer(string clientName)
+{
+    PlayerManager p;
+    playersVec.push_back(p);
+    playersVec.back().name = clientName;
+    //playersVec.back().load(t_player, font);
+};

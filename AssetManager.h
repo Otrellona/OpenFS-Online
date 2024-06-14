@@ -2,28 +2,6 @@
 #include <string>
 #pragma once
 
-/*tiles/dirt.png:           PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
-tiles/grass_clock.png:    PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
-tiles/grass.png:          PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
-tiles/house.png:          PNG image data, 100 x 100, 8-bit/color RGBA, non-interlaced
-tiles/tomato_bed_1.png:   PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
-tiles/tomato_bed_2.png:   PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
-tiles/tomato_bed_3.png:   PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
-tiles/tomato_bed_rot.png: PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
-tiles/water_0.png:        PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
-tiles/water_1.png:        PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
-ui/back.png:              PNG image data, 1280 x 720, 8-bit/color RGB, non-interlaced
-ui/balance_icon.png:      PNG image data, 100 x 100, 8-bit/color RGBA, non-interlaced
-ui/basket.png:            PNG image data, 72 x 72, 8-bit/color RGBA, non-interlaced
-ui/button.png:            PNG image data, 212 x 48, 8-bit/color RGBA, non-interlaced
-ui/logo.png:              PNG image data, 393 x 81, 8-bit/color RGBA, non-interlaced
-ui/panel.png:             PNG image data, 399 x 91, 8-bit/color RGBA, non-interlaced
-ui/pause.png:             PNG image data, 50 x 50, 8-bit/color RGBA, non-interlaced
-ui/seed.png:              PNG image data, 72 x 72, 8-bit/color RGBA, non-interlaced
-ui/shovel.png:            PNG image data, 72 x 72, 8-bit/color RGBA, non-interlaced
-ui/tomato.png:            PNG image data, 50 x 50, 8-bit/color RGBA, non-interlaced
-ui/worker.png:            PNG image data, 100 x 100, 8-bit/color RGBA, non-interlaced*/
-
 /*
 Value Names:
 1) _txt - sf::Text
@@ -72,6 +50,7 @@ public:
 
         back_s.setTexture(back_t);
         back_s.setPosition(0, 0);
+        back_s.setScale(width / back_s.getLocalBounds().width, height / back_s.getLocalBounds().height);
 
         button_newgame_s.setTexture(button_menu_t);
         button_newgame_s.setPosition((width-212)/2, 300);
@@ -94,16 +73,16 @@ public:
     sf::Text balance_txt, worker_txt;
 
     //Cursor
-    sf::Texture shovel_t, basket_t;
-    sf::Sprite shovel_s, basket_s;
-    sf::Sprite tomato_cursor_s, shovel_cursor_s, basket_cursor_s;
+    sf::Texture shovel_t, basket_t, build_t;
+    sf::Sprite shovel_s, basket_s, build_s;
+    sf::Sprite tomato_cursor_s, shovel_cursor_s, basket_cursor_s, build_cursor_s;
 
     //Audio
     sf::SoundBuffer dig_sound_b, plant_sound_b, gather_sound_b;
     sf::Sound dig_sound_a, plant_sound_a, gather_sound_a;
 
     //Tiles
-    sf::Texture grass_t, dirt_t, tomato_bed_1_t, tomato_bed_2_t, tomato_bed_3_t, tomato_bed_rot_t, house_t;
+    sf::Texture grass_t, dirt_t, tomato_bed_1_t, tomato_bed_2_t, tomato_bed_3_t, tomato_bed_rot_t, grass_house_t;
     sf::Texture grass_clock_t;
     sf::Texture water_0_t, water_1_t;
     sf::Sprite house_s;
@@ -128,6 +107,7 @@ public:
         shovel_t.loadFromFile("textures/ui/shovel.png");
         seed_t.loadFromFile("textures/ui/seed.png");
         basket_t.loadFromFile("textures/ui/basket.png");
+        build_t.loadFromFile("textures/ui/build.png");
 
         tomato_t.loadFromFile("textures/ui/tomato.png");
 
@@ -138,6 +118,8 @@ public:
         shovel_cursor_s.setOrigin(36, 36);
         basket_cursor_s.setTexture(basket_t);
         basket_cursor_s.setOrigin(36, 36);
+        build_cursor_s.setTexture(build_t);
+        build_cursor_s.setOrigin(36, 36);
 
         //Sprites
         pause_s.setTexture(pause_t);
@@ -147,6 +129,7 @@ public:
         shovel_s.setTexture(shovel_t);
         seed_s.setTexture(seed_t);
         basket_s.setTexture(basket_t);
+        build_s.setTexture(build_t);
 
         tomato_s.setTexture(tomato_t);
         tomato_s.setPosition(-100, -100);
@@ -158,6 +141,7 @@ public:
         shovel_s.setPosition((width-72)/2-136, height-76);
         basket_s.setPosition((width-72)/2, height-76);
         seed_s.setPosition((width-72)/2+136, height-76);
+        build_s.setPosition((width - 72) / 2 + 136 * 2, height - 76);
     }
     //Remove Menu
     void CloseMenu() {
@@ -198,8 +182,7 @@ public:
 
         grass_clock_t.loadFromFile("textures/tiles/grass_clock.png");
 
-        house_t.loadFromFile("textures/tiles/house.png");
-        house_s.setTexture(house_t);
+        grass_house_t.loadFromFile("textures/tiles/grass_house.png");
     }
 
     void DrawUI(sf::RenderWindow* window) {
@@ -214,10 +197,12 @@ public:
         window->draw(shovel_s);
         window->draw(basket_s);
         window->draw(seed_s);
+        window->draw(build_s);
 
         window->draw(tomato_cursor_s);
         window->draw(shovel_cursor_s);
         window->draw(basket_cursor_s);
+        window->draw(build_cursor_s);
 
         window->draw(tomato_s);
 

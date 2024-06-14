@@ -2,6 +2,28 @@
 #include <string>
 #pragma once
 
+/*tiles/dirt.png:           PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
+tiles/grass_clock.png:    PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
+tiles/grass.png:          PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
+tiles/house.png:          PNG image data, 100 x 100, 8-bit/color RGBA, non-interlaced
+tiles/tomato_bed_1.png:   PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
+tiles/tomato_bed_2.png:   PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
+tiles/tomato_bed_3.png:   PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
+tiles/tomato_bed_rot.png: PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
+tiles/water_0.png:        PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
+tiles/water_1.png:        PNG image data, 100 x 100, 8-bit/color RGB, non-interlaced
+ui/back.png:              PNG image data, 1280 x 720, 8-bit/color RGB, non-interlaced
+ui/balance_icon.png:      PNG image data, 100 x 100, 8-bit/color RGBA, non-interlaced
+ui/basket.png:            PNG image data, 72 x 72, 8-bit/color RGBA, non-interlaced
+ui/button.png:            PNG image data, 212 x 48, 8-bit/color RGBA, non-interlaced
+ui/logo.png:              PNG image data, 393 x 81, 8-bit/color RGBA, non-interlaced
+ui/panel.png:             PNG image data, 399 x 91, 8-bit/color RGBA, non-interlaced
+ui/pause.png:             PNG image data, 50 x 50, 8-bit/color RGBA, non-interlaced
+ui/seed.png:              PNG image data, 72 x 72, 8-bit/color RGBA, non-interlaced
+ui/shovel.png:            PNG image data, 72 x 72, 8-bit/color RGBA, non-interlaced
+ui/tomato.png:            PNG image data, 50 x 50, 8-bit/color RGBA, non-interlaced
+ui/worker.png:            PNG image data, 100 x 100, 8-bit/color RGBA, non-interlaced*/
+
 /*
 Value Names:
 1) _txt - sf::Text
@@ -11,6 +33,9 @@ Value Names:
 5) _a - sf::Audio
 6) _p - Player Data
 */
+
+int width = 1280;
+int height = 720;
 
 using namespace std;
 void CreateText(sf::Text& text, sf::Font& font, string txt, int size, sf::Color color) {
@@ -43,20 +68,20 @@ public:
 
         //Sprites
         logo_s.setTexture(logo_t);
-        logo_s.setPosition(420, 100);
+        logo_s.setPosition((width-393)/2, 100);
 
         back_s.setTexture(back_t);
         back_s.setPosition(0, 0);
 
         button_newgame_s.setTexture(button_menu_t);
-        button_newgame_s.setPosition(500, 300);
+        button_newgame_s.setPosition((width-212)/2, 300);
 
         button_exitgame_s.setTexture(button_menu_t);
-        button_exitgame_s.setPosition(500, 400);
+        button_exitgame_s.setPosition((width-212)/2, 400);
 
         //Text
-        button_newgame_txt.setPosition(550, 310);
-        button_exitgame_txt.setPosition(580, 410);
+        button_newgame_txt.setPosition((width-110)/2, 310);
+        button_exitgame_txt.setPosition((width-40)/2, 410);
     }
 
     //Game UI
@@ -90,10 +115,10 @@ public:
 
         //Text
         CreateText(balance_txt, font, std::to_string(money_p) + "$", 36, sf::Color::Black);
-        balance_txt.setPosition(121, 660);
+        balance_txt.setPosition(121, height-60);
 
         CreateText(worker_txt, font, std::to_string(max_worker) + "/" + std::to_string(max_worker), 36, sf::Color::Black);
-        worker_txt.setPosition(121, 570);
+        worker_txt.setPosition(121, height-150);
 
         //Textures
         pause_t.loadFromFile("textures/ui/pause.png");
@@ -125,14 +150,14 @@ public:
 
         tomato_s.setTexture(tomato_t);
         tomato_s.setPosition(-100, -100);
-        
+
         pause_s.setPosition(4, 4);
-        balance_icon_s.setPosition(6, 637);
-        worker_icon_s.setPosition(6, 537);
-        panel_s.setPosition(425, 629);
-        shovel_s.setPosition(451, 644);
-        basket_s.setPosition(578, 644);
-        seed_s.setPosition(723, 644);
+        balance_icon_s.setPosition(6, height-83);
+        worker_icon_s.setPosition(6, height-183);
+        panel_s.setPosition((width-400)/2, height-91);
+        shovel_s.setPosition((width-72)/2-136, height-76);
+        basket_s.setPosition((width-72)/2, height-76);
+        seed_s.setPosition((width-72)/2+136, height-76);
     }
     //Remove Menu
     void CloseMenu() {

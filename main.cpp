@@ -215,7 +215,7 @@ int main()
                             for (int i = 0; i < playersVec.size(); i++)
                             {
                                 if (s == playersVec[i].name)
-                                    playersVec[i].money_p = x;
+                                    x = playersVec[i].getBalance();
                             }
                         }
                     }

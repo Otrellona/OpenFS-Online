@@ -17,6 +17,8 @@ public:
 		cur_worker = max_worker;
 	}
 
+	int getBalance() { return money_p; };
+
 	void draw(RenderWindow& window, int x)
 	{
 		font.loadFromFile("textures/font/arial.ttf");

@@ -141,13 +141,13 @@
     <ClCompile Include="NetworkClient.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AssetManager.h" />
-    <ClInclude Include="GenerationManager.h" />
+    <ClInclude Include="AssetManager.hpp" />
+    <ClInclude Include="GenerationManager.hpp" />
     <ClInclude Include="icon.h" />
-    <ClInclude Include="NetworkClient.h" />
-    <ClInclude Include="PlayerManager.h" />
-    <ClInclude Include="ShopManager.h" />
-    <ClInclude Include="TileManager.h" />
+    <ClInclude Include="NetworkClient.hpp" />
+    <ClInclude Include="PlayerManager.hpp" />
+    <ClInclude Include="ShopManager.hpp" />
+    <ClInclude Include="TileManager.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

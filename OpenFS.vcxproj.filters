@@ -26,22 +26,22 @@
     <ClInclude Include="AssetManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerManager.h">
+    <ClInclude Include="PlayerManager.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="TileManager.h">
+    <ClInclude Include="TileManager.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="ShopManager.h">
+    <ClInclude Include="ShopManager.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="GenerationManager.h">
+    <ClInclude Include="GenerationManager.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="icon.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkClient.h">
+    <ClInclude Include="NetworkClient.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

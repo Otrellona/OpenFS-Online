@@ -81,7 +81,7 @@ Socket::Status NetworkClient::receiveConnectedClientsNames(vector<string>& names
 			return Socket::Status::Done;
 
 		}
-		else cout << "(!)receiveConnectedClientsNames(): Receives packet is empty, ensure that packet contains: (string name1 << string name2 << ...) or \"FIRST\" if it's first connected client\n";
+		else cout << "(!)receiveConnectedClientsNames(): Received packet is empty, ensure that packet contains: (string name1 << string name2 << ...) or \"FIRST\" if it's first connected client\n";
 	}
 	else cout << "(!)receiveConnectedClientsNames(): Failed to receive clients names\n";
 

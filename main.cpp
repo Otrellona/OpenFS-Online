@@ -11,12 +11,12 @@
 #include <windows.h>
 #endif
 
-#include "NetworkClient.h"
-#include "GenerationManager.h"
-#include "PlayerManager.h"
-#include "AssetManager.h"
-#include "TileManager.h"
-#include "ShopManager.h"
+#include "NetworkClient.hpp"
+#include "GenerationManager.hpp"
+#include "PlayerManager.hpp"
+#include "AssetManager.hpp"
+#include "TileManager.hpp"
+#include "ShopManager.hpp"
 #include "icon.h"
 
 //variables

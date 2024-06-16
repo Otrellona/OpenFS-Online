@@ -4,6 +4,7 @@
 class TileManager {
 public:
 	sf::Sprite tile;
+	std::string color;
 
 	int lives;
 	int growtime;

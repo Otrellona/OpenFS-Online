@@ -71,6 +71,7 @@ public:
 
     //Window
     sf::Text balance_txt, worker_txt;
+    sf::Text op_nickname_txt, op_balance_txt, win_txt;
 
     //Cursor
     sf::Texture shovel_t, basket_t, build_t;
@@ -98,6 +99,16 @@ public:
 
         CreateText(worker_txt, font, std::to_string(max_worker) + "/" + std::to_string(max_worker), 36, sf::Color::Black);
         worker_txt.setPosition(121, height-150);
+
+        //Network
+        CreateText(op_nickname_txt, font, "Wait player", 36, sf::Color::Black);
+        op_nickname_txt.setPosition(60, height - 650);
+
+        CreateText(op_balance_txt, font, "Wait player", 36, sf::Color::Black);
+        op_balance_txt.setPosition(151, height - 650);
+
+        CreateText(win_txt, font, "", 46, sf::Color::Black);
+        win_txt.setPosition(width / 2, 100);
 
         //Textures
         pause_t.loadFromFile("textures/ui/pause.png");
@@ -138,10 +149,11 @@ public:
         balance_icon_s.setPosition(6, height-83);
         worker_icon_s.setPosition(6, height-183);
         panel_s.setPosition((width-panel_s.getLocalBounds().width)/2, height-91);
-        shovel_s.setPosition((width-72)/2-136, height-76);
-        basket_s.setPosition((width-72)/2, height-76);
-        seed_s.setPosition((width-72)/2+136, height-76);
-        build_s.setPosition((width - 72) / 2 + 136 * 2, height - 76);
+
+        shovel_s.setPosition((width-72)/2-68, height-76);
+        basket_s.setPosition((width-72)/3, height-76);
+        seed_s.setPosition((width-72)/2+68, height-76);
+        build_s.setPosition((width - 72) / 2 + 68 * 3, height - 76);
     }
     //Remove Menu
     void CloseMenu() {
@@ -193,6 +205,9 @@ public:
         window->draw(worker_icon_s);
         window->draw(pause_s);
 
+        window->draw(op_nickname_txt);
+        window->draw(op_balance_txt);
+
         window->draw(panel_s);
         window->draw(shovel_s);
         window->draw(basket_s);
@@ -213,5 +228,6 @@ public:
         window->draw(button_exitgame_s);
         window->draw(button_newgame_txt);
         window->draw(button_exitgame_txt);
+        window->draw(win_txt);
     }
 };

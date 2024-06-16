@@ -6,5 +6,5 @@ public:
 	int tomato_sell_cost = 2;
 
 	//Shop
-	int tomato_seed_buy_cost = 5;
+	int tomato_seed_buy_cost = 3;
 };

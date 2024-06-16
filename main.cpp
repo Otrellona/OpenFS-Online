@@ -13,7 +13,6 @@
 #include <windows.h>
 #endif
 
-#include "NetworkClient.hpp"
 #include "GenerationManager.hpp"
 #include "PlayerManager.hpp"
 #include "AssetManager.hpp"

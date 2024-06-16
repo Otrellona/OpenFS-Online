@@ -21,7 +21,7 @@
 #include "icon.h"
 
 //variables
-const int balance_to_win = 101;
+const int balance_to_win = 300;
 const short side = 10;
 TileManager TileList[side * side];
 
@@ -195,16 +195,18 @@ int main()
             ti.color = "";
 
             //Set tile texture
-            int tileNumber = level[i + j * 10];
-            if (tileNumber == 0) {
-                ti.tile.setTexture(as.grass_t);
-                ti.isWater = false;
-            }
+            //int tileNumber = level[i + j * 10];
+            //if (tileNumber == 0) {
+            //    
+            //    ti.isWater = false;
+            //}
+            //
+            //else {
+            //    ti.tile.setTexture(as.water_0_t);
+            //    ti.isWater = true;
+            //}
 
-            else {
-                ti.tile.setTexture(as.water_0_t);
-                ti.isWater = true;
-            }
+            ti.tile.setTexture(as.grass_t);
 
             ti.tile.setPosition((width-side*100)/2 + i * 100, j * 100);
 

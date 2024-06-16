@@ -233,20 +233,6 @@ int main()
         window.close();
 
     //Map generating
-
-
-    for (int i = 0; i < std::size(level); i++) {
-        int start = 0;
-        int end = side;
-        int x = rand() % (end - start + 1) + start;
-    
-        if (x < 3)
-            level[i] = 1;
-        else
-            level[i] = 0;
-    }
-
-
     unsigned int n = 0;
     for (unsigned int i = 0; i < side; i++)
         for (unsigned int j = 0; j < side; j++)

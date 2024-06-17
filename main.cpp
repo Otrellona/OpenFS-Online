@@ -21,7 +21,7 @@
 #include "icon.h"
 
 //variables
-const int balance_to_win = 150;
+const int balance_to_win = 200;
 const sf::Uint16 side = 10;
 TileManager TileList[side * side];
 
@@ -87,13 +87,12 @@ void receiveMessages(sf::TcpSocket& socket, AssetManager &as, string &nickname) 
             std::cerr << "Error receiving data" << std::endl;
             continue;
         }
-        float x;
-        float y;
+        sf::Uint16 i_t;
         string t;
         string c;
         string n;
         sf::Uint16 m;
-        packet >> x >> y >> t >> c >> n >> m;
+        packet >> i_t >> t >> c >> n >> m;
 
         if (n != "" && nickname != n) {
 
@@ -116,39 +115,35 @@ void receiveMessages(sf::TcpSocket& socket, AssetManager &as, string &nickname) 
             }
         }
 
-        for (int i = 0; i < std::size(TileList); i++) {
-            if (TileList[i].tile.getGlobalBounds().contains(x, y)) {
-                if (c == "r") {
-                    TileList[i].tile.setColor(sf::Color::Red);
-                    TileList[i].color = "r";
-                }
-
-                if (c == "b") {
-                    TileList[i].tile.setColor(sf::Color::Blue);
-                    TileList[i].color = "b";
-                }
-
-                if (t == "grass_clock_t") {
-                    TileList[i].tile.setTexture(as.grass_clock_t);
-                }
-
-                if (t == "tomato_bed_1_t") {
-                    TileList[i].tile.setTexture(as.tomato_bed_1_t);
-                    TileList[i].growtime = 10;
-                }
-
-                if (t == "tomato_bed_2_t")
-                    TileList[i].tile.setTexture(as.tomato_bed_2_t);
-                if (t == "tomato_bed_3_t")
-                    TileList[i].tile.setTexture(as.tomato_bed_3_t);
-                if (t == "tomato_bed_rot_t")
-                    TileList[i].tile.setTexture(as.tomato_bed_rot_t);
-                if (t == "grass_house_t")
-                    TileList[i].tile.setTexture(as.grass_house_t);
-                if (t == "dirt_t")
-                    TileList[i].tile.setTexture(as.dirt_t);
-            }
+        if (c == "r") {
+            TileList[i_t].tile.setColor(sf::Color::Red);
+            TileList[i_t].color = "r";
         }
+
+        if (c == "b") {
+            TileList[i_t].tile.setColor(sf::Color::Blue);
+            TileList[i_t].color = "b";
+        }
+
+        if (t == "grass_clock_t") {
+            TileList[i_t].tile.setTexture(as.grass_clock_t);
+        }
+
+        if (t == "tomato_bed_1_t") {
+            TileList[i_t].tile.setTexture(as.tomato_bed_1_t);
+            TileList[i_t].growtime = 10;
+        }
+
+        if (t == "tomato_bed_2_t")
+            TileList[i_t].tile.setTexture(as.tomato_bed_2_t);
+        if (t == "tomato_bed_3_t")
+            TileList[i_t].tile.setTexture(as.tomato_bed_3_t);
+        if (t == "tomato_bed_rot_t")
+            TileList[i_t].tile.setTexture(as.tomato_bed_rot_t);
+        if (t == "grass_house_t")
+            TileList[i_t].tile.setTexture(as.grass_house_t);
+        if (t == "dirt_t")
+            TileList[i_t].tile.setTexture(as.dirt_t);
     }
 }
 
@@ -187,24 +182,7 @@ int main()
 
     unsigned short serverPort = 54000;
 
-    // Сообщаем серверу о своем подключении
-    //const std::string connectMsg = "CONNECT";
-    //if (socket.send(connectMsg.c_str(), connectMsg.size() + 1, serverIp, serverPort) != sf::Socket::Done) {
-    //    std::cerr << "Error sending connect message" << std::endl;
-    //    return -1;
-    //}
-
-    //sf::Packet packet;
-    //
-    //if (socket.receive(packet, serverIp, port) != sf::Socket::Done) {
-    //    std::cerr << "Error receiving data" << std::endl;
-    //    return -1;
-    //}
-    //
-    //sf::Uint16 level[side*side];
-    //packet >> level[side*side];
-
-    sf::Socket::Status status = socket.connect("localhost", serverPort);
+    sf::Socket::Status status = socket.connect(serverIp, serverPort);
     if (status != sf::Socket::Done)
     {
         return -1;
@@ -212,14 +190,16 @@ int main()
 
     std::cout << "Connected to server " << serverIp << ":" << serverPort << std::endl;
 
-    std::cout << "Enter nickname";
+    int level[100];
+
+    std::cout << "Enter nickname ";
     std::string nickname;
     std::cin >> nickname;
 
     // Запуск потока для получения сообщений
     std::thread receiverThread(receiveMessages, std::ref(socket), std::ref(as), std::ref(nickname));
 
-    std::cout << "Enter team (r or b)";
+    std::cout << "Enter team (r or b) ";
     std::string team;
     std::cin >> team;
 
@@ -247,16 +227,16 @@ int main()
             ti.color = "";
 
             //Set tile texture
-            //int tileNumber = level[i + j * 10];
-            //if (tileNumber == 0) {
-            //    
-            //    ti.isWater = false;
-            //}
-            //
-            //else {
-            //    ti.tile.setTexture(as.water_0_t);
-            //    ti.isWater = true;
-            //}
+            int tileNumber = level[i + j * 10];
+            if (tileNumber == 0) {
+                
+                ti.isWater = false;
+            }
+            
+            else {
+                ti.tile.setTexture(as.water_0_t);
+                ti.isWater = true;
+            }
 
             ti.tile.setTexture(as.grass_t);
 
@@ -305,11 +285,11 @@ int main()
                 if (TileList[i].growtime == 5) {
                     //TileList[i].tile.setTexture(as.tomato_bed_2_t);
 
-                    float x = TileList[i].tile.getPosition().x;
-                    float y = TileList[i].tile.getPosition().y;
+                    sf::Uint16 i_t = i;
                     string t = "tomato_bed_2_t";
+                    string c = team;
                     sf::Packet packet;
-                    packet << x << y << t;
+                    packet << i_t << t << c;
 
                     if (socket.send(packet) != sf::Socket::Done) {
                         std::cerr << "Error sending message" << std::endl;
@@ -319,11 +299,11 @@ int main()
                 if (TileList[i].growtime == 0) {
                     //[i].tile.setTexture(as.tomato_bed_3_t);
 
-                    float x = TileList[i].tile.getPosition().x;
-                    float y = TileList[i].tile.getPosition().y;
+                    sf::Uint16 i_t = i;
                     string t = "tomato_bed_3_t";
+                    string c = team;
                     sf::Packet packet;
-                    packet << x << y << t;
+                    packet << i_t << t << c;
 
                     if (socket.send(packet) != sf::Socket::Done) {
                         std::cerr << "Error sending message" << std::endl;
@@ -365,11 +345,11 @@ int main()
                     pl.cur_worker += 1;
                     as.worker_txt.setString(std::to_string(pl.cur_worker) + "/" + std::to_string(pl.max_worker));
 
-                    float x = TileList[i].tile.getPosition().x;
-                    float y = TileList[i].tile.getPosition().y;
+                    sf::Uint16 i_t = i;
                     string t = "dirt_t";
+                    string c = team;
                     sf::Packet packet;
-                    packet << x << y << t;
+                    packet << i_t << t << c;
 
                     if (socket.send(packet) != sf::Socket::Done) {
                         std::cerr << "Error sending message" << std::endl;
@@ -485,8 +465,7 @@ int main()
                                 //if (team == "b")
                                 //    TileList[i].tile.setColor(sf::Color::Blue);
 
-                                float x = TileList[i].tile.getPosition().x;
-                                float y = TileList[i].tile.getPosition().y;
+                                sf::Uint16 i_t = i;
                                 string t = "grass_clock_t";
                                 string c = team;
 
@@ -494,7 +473,7 @@ int main()
                                 sf::Uint16 m = pl.money_p;
 
                                 sf::Packet packet;
-                                packet << x << y << t << c << n << m;
+                                packet << i_t << t << c << n << m;
 
                                 if (socket.send(packet) != sf::Socket::Done) {
                                     std::cerr << "Error sending message" << std::endl;
@@ -511,8 +490,7 @@ int main()
                                 Plant(TileList[i], as.tomato_bed_1_t, as.balance_txt, pl, sh.tomato_seed_buy_cost, TileList[i].tomato_grow_time, as.plant_sound_a);
 
                                 string t = "tomato_bed_1_t";
-                                float x = TileList[i].tile.getPosition().x;
-                                float y = TileList[i].tile.getPosition().y;
+                                sf::Uint16 i_t = i;
                                 string c = team;
 
                                 string n = nickname;
@@ -526,7 +504,7 @@ int main()
                                     TileList[i].tile.setColor(sf::Color::Blue);
 
                                 sf::Packet packet;
-                                packet << x << y << t << c << n << m;
+                                packet << i_t << t << c << n << m;
 
                                 if (socket.send(packet) != sf::Socket::Done) {
                                     std::cerr << "Error sending message" << std::endl;
@@ -538,8 +516,7 @@ int main()
                                 Gather(TileList[i], as.tomato_bed_1_t, pl, as.balance_txt, as.tomato_bed_rot_t, sh.tomato_sell_cost, TileList[i].tomato_grow_time, as.gather_sound_a);
 
                                 string t;
-                                float x = TileList[i].tile.getPosition().x;
-                                float y = TileList[i].tile.getPosition().y;
+                                sf::Uint16 i_t = i;
                                 string c = team;
 
                                 string n = nickname;
@@ -559,7 +536,7 @@ int main()
                                     t = "tomato_bed_rot_t";
 
                                 sf::Packet packet;
-                                packet << x << y << t << c << n << m;
+                                packet << i_t << t << c << n << m;
 
                                 if (socket.send(packet) != sf::Socket::Done) {
                                     std::cerr << "Error sending message" << std::endl;
@@ -579,8 +556,7 @@ int main()
                                 //TileList[i].tile.setTexture(as.grass_house_t);
 
                                 string t = "grass_house_t";
-                                float x = TileList[i].tile.getPosition().x;
-                                float y = TileList[i].tile.getPosition().y;
+                                sf::Uint16 i_t = i;
                                 string c = team;
 
                                 string n = nickname;
@@ -594,7 +570,7 @@ int main()
                                     TileList[i].tile.setColor(sf::Color::Blue);
 
                                 sf::Packet packet;
-                                packet << x << y << t << c << n << m;
+                                packet << i_t << t << c << n << m;
 
                                 if (socket.send(packet) != sf::Socket::Done) {
                                     std::cerr << "Error sending message" << std::endl;

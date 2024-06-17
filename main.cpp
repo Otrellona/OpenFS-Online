@@ -21,7 +21,7 @@
 #include "icon.h"
 
 //variables
-const int balance_to_win = 300;
+const int balance_to_win = 150;
 const sf::Uint16 side = 10;
 TileManager TileList[side * side];
 
@@ -77,13 +77,13 @@ void setCursor(sf::RenderWindow &window, sf::Sprite &cur_s, float &x, float &y, 
 }
 
 //Network
-void receiveMessages(sf::UdpSocket& socket, AssetManager &as, string &nickname) {
+void receiveMessages(sf::TcpSocket& socket, AssetManager &as, string &nickname) {
     sf::Packet packet;
     sf::IpAddress sender;
     unsigned short port;
 
     while (true) {
-        if (socket.receive(packet, sender, port) != sf::Socket::Done) {
+        if (socket.receive(packet) != sf::Socket::Done) {
             std::cerr << "Error receiving data" << std::endl;
             continue;
         }
@@ -130,7 +130,6 @@ void receiveMessages(sf::UdpSocket& socket, AssetManager &as, string &nickname) 
 
                 if (t == "grass_clock_t") {
                     TileList[i].tile.setTexture(as.grass_clock_t);
-                    TileList[i].digtime = 3;
                 }
 
                 if (t == "tomato_bed_1_t") {
@@ -179,8 +178,7 @@ int main()
 
 
     //Network
-    sf::UdpSocket socket;
-    unsigned short port;
+    sf::TcpSocket socket;
 
     // Устанавливаем серверный IP и порт
     sf::IpAddress serverIp;
@@ -190,21 +188,27 @@ int main()
     unsigned short serverPort = 54000;
 
     // Сообщаем серверу о своем подключении
-    const std::string connectMsg = "CONNECT";
-    if (socket.send(connectMsg.c_str(), connectMsg.size() + 1, serverIp, serverPort) != sf::Socket::Done) {
-        std::cerr << "Error sending connect message" << std::endl;
+    //const std::string connectMsg = "CONNECT";
+    //if (socket.send(connectMsg.c_str(), connectMsg.size() + 1, serverIp, serverPort) != sf::Socket::Done) {
+    //    std::cerr << "Error sending connect message" << std::endl;
+    //    return -1;
+    //}
+
+    //sf::Packet packet;
+    //
+    //if (socket.receive(packet, serverIp, port) != sf::Socket::Done) {
+    //    std::cerr << "Error receiving data" << std::endl;
+    //    return -1;
+    //}
+    //
+    //sf::Uint16 level[side*side];
+    //packet >> level[side*side];
+
+    sf::Socket::Status status = socket.connect("localhost", serverPort);
+    if (status != sf::Socket::Done)
+    {
         return -1;
     }
-
-    sf::Packet packet;
-
-    if (socket.receive(packet, serverIp, port) != sf::Socket::Done) {
-        std::cerr << "Error receiving data" << std::endl;
-        return -1;
-    }
-
-    sf::Uint16 level[side*side];
-    packet >> level[side*side];
 
     std::cout << "Connected to server " << serverIp << ":" << serverPort << std::endl;
 
@@ -243,16 +247,16 @@ int main()
             ti.color = "";
 
             //Set tile texture
-            int tileNumber = level[i + j * 10];
-            if (tileNumber == 0) {
-                
-                ti.isWater = false;
-            }
-            
-            else {
-                ti.tile.setTexture(as.water_0_t);
-                ti.isWater = true;
-            }
+            //int tileNumber = level[i + j * 10];
+            //if (tileNumber == 0) {
+            //    
+            //    ti.isWater = false;
+            //}
+            //
+            //else {
+            //    ti.tile.setTexture(as.water_0_t);
+            //    ti.isWater = true;
+            //}
 
             ti.tile.setTexture(as.grass_t);
 
@@ -267,7 +271,7 @@ int main()
 
             n += 1;
         }
-
+    
 
     //Update
     bool pr = false;
@@ -307,7 +311,7 @@ int main()
                     sf::Packet packet;
                     packet << x << y << t;
 
-                    if (socket.send(packet, serverIp, serverPort) != sf::Socket::Done) {
+                    if (socket.send(packet) != sf::Socket::Done) {
                         std::cerr << "Error sending message" << std::endl;
                     }
                 }
@@ -321,7 +325,7 @@ int main()
                     sf::Packet packet;
                     packet << x << y << t;
 
-                    if (socket.send(packet, serverIp, serverPort) != sf::Socket::Done) {
+                    if (socket.send(packet) != sf::Socket::Done) {
                         std::cerr << "Error sending message" << std::endl;
                     }
 
@@ -358,6 +362,8 @@ int main()
                 if (TileList[i].digtime == 0) {
                     //TileList[i].tile.setTexture(as.dirt_t);
                     TileList[i].digtime = -1;
+                    pl.cur_worker += 1;
+                    as.worker_txt.setString(std::to_string(pl.cur_worker) + "/" + std::to_string(pl.max_worker));
 
                     float x = TileList[i].tile.getPosition().x;
                     float y = TileList[i].tile.getPosition().y;
@@ -365,12 +371,9 @@ int main()
                     sf::Packet packet;
                     packet << x << y << t;
 
-                    if (socket.send(packet, serverIp, serverPort) != sf::Socket::Done) {
+                    if (socket.send(packet) != sf::Socket::Done) {
                         std::cerr << "Error sending message" << std::endl;
                     }
-
-                    pl.cur_worker += 1;
-                    as.worker_txt.setString(std::to_string(pl.cur_worker) + "/" + std::to_string(pl.max_worker));
                 }
             }
 
@@ -472,7 +475,7 @@ int main()
                         {
                             //Dig bed
                             if (isShovel == true && (TileList[i].tile.getTexture() == &as.grass_t || TileList[i].tile.getTexture() == &as.tomato_bed_rot_t)) {
-                                //TileList[i].digtime = 3;
+                                TileList[i].digtime = 3;
                                 //TileList[i].tile.setTexture(as.grass_clock_t);
                                 //
                                 //TileList[i].color = team;
@@ -493,7 +496,7 @@ int main()
                                 sf::Packet packet;
                                 packet << x << y << t << c << n << m;
 
-                                if (socket.send(packet, serverIp, serverPort) != sf::Socket::Done) {
+                                if (socket.send(packet) != sf::Socket::Done) {
                                     std::cerr << "Error sending message" << std::endl;
                                 }
 
@@ -525,7 +528,7 @@ int main()
                                 sf::Packet packet;
                                 packet << x << y << t << c << n << m;
 
-                                if (socket.send(packet, serverIp, serverPort) != sf::Socket::Done) {
+                                if (socket.send(packet) != sf::Socket::Done) {
                                     std::cerr << "Error sending message" << std::endl;
                                 }
                             }
@@ -558,7 +561,7 @@ int main()
                                 sf::Packet packet;
                                 packet << x << y << t << c << n << m;
 
-                                if (socket.send(packet, serverIp, serverPort) != sf::Socket::Done) {
+                                if (socket.send(packet) != sf::Socket::Done) {
                                     std::cerr << "Error sending message" << std::endl;
                                 }
                             }
@@ -593,7 +596,7 @@ int main()
                                 sf::Packet packet;
                                 packet << x << y << t << c << n << m;
 
-                                if (socket.send(packet, serverIp, serverPort) != sf::Socket::Done) {
+                                if (socket.send(packet) != sf::Socket::Done) {
                                     std::cerr << "Error sending message" << std::endl;
                                 }
                             }

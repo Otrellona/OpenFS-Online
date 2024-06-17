@@ -28,16 +28,26 @@ public:
     //Menu UI
     sf::Font MenuFont;
     sf::Texture logo_t, button_menu_t, back_t;
-    sf::Text button_newgame_txt, button_exitgame_txt;
-    sf::Sprite logo_s, button_newgame_s, button_exitgame_s, back_s;
+    sf::Text button_newgame_txt, button_exitgame_txt, nickname_txt, IPAddress_txt, button_redteam_txt, button_blueteam_txt, win_txt, input_txt;
+    sf::Sprite logo_s, button_newgame_s, button_exitgame_s, back_s, nickname_s, IPAddress_s, button_redteam_s, button_blueteam_s;
     sf::Music back_music, a;
 
     void setMenuUi() {
         MenuFont.loadFromFile("textures/font/arial.ttf");
 
+        CreateText(win_txt, font, "For win you need to earn 300$", 46, sf::Color::Black);
+        win_txt.setOrigin(win_txt.getLocalBounds().width / 2, win_txt.getLocalBounds().height / 2);
+        win_txt.setPosition(width / 2, 150);
+
         //Text
-        CreateText(button_newgame_txt, MenuFont, "New Farm", 24, sf::Color::Black);
+        CreateText(button_newgame_txt, MenuFont, "Connect to server", 24, sf::Color::Black);
         CreateText(button_exitgame_txt, MenuFont, "Exit", 24, sf::Color::Black);
+        CreateText(nickname_txt, MenuFont, "Enter nickname", 24, sf::Color::Black);
+        CreateText(IPAddress_txt, MenuFont, "Enter server IP", 24, sf::Color::Black);
+        CreateText(button_redteam_txt, MenuFont, "Red team", 24, sf::Color::Black);
+        CreateText(button_blueteam_txt, MenuFont, "Blue team", 24, sf::Color::Black);
+        CreateText(input_txt, MenuFont, "Press Enter to confirm", 24, sf::Color::Black);
+        input_txt.setPosition(-100, -100);
 
         //Textures
         logo_t.loadFromFile("textures/ui/logo.png");
@@ -46,32 +56,52 @@ public:
 
         //Sprites
         logo_s.setTexture(logo_t);
-        logo_s.setPosition((width-393)/2, 100);
+        logo_s.setPosition((width-393)/2, 50);
 
         back_s.setTexture(back_t);
         back_s.setPosition(0, 0);
         back_s.setScale(width / back_s.getLocalBounds().width, height / back_s.getLocalBounds().height);
 
+        nickname_s.setTexture(button_menu_t);
+        nickname_s.setPosition((width - 222) / 2, 200);
+
+        IPAddress_s.setTexture(button_menu_t);
+        IPAddress_s.setPosition((width - 222) / 2, 300);
+
+        button_redteam_s.setTexture(button_menu_t);
+        button_redteam_s.setColor(sf::Color::Red);
+        button_redteam_s.setPosition((width - 672) / 2, 400);
+
+        button_blueteam_s.setTexture(button_menu_t);
+        button_blueteam_s.setColor(sf::Color::Blue);
+        button_blueteam_s.setPosition((width + 312) / 2, 400);
+
+
         button_newgame_s.setTexture(button_menu_t);
-        button_newgame_s.setPosition((width-212)/2, 300);
+        button_newgame_s.setPosition((width - 222)/2, 550);
+
 
         button_exitgame_s.setTexture(button_menu_t);
-        button_exitgame_s.setPosition((width-212)/2, 400);
+        button_exitgame_s.setPosition((width-222)/2, 650);
 
         //Text
-        button_newgame_txt.setPosition((width-110)/2, 310);
-        button_exitgame_txt.setPosition((width-40)/2, 410);
+        button_newgame_txt.setPosition((width-195)/2, 560);
+        button_exitgame_txt.setPosition((width-40)/2, 660);
+        button_redteam_txt.setPosition((width - 550) / 2, 410);
+        button_blueteam_txt.setPosition((width + 420) / 2, 410);
+        nickname_txt.setPosition((width - 190) / 2, 210);
+        IPAddress_txt.setPosition((width - 190) / 2, 310);
     }
 
     //Game UI
     sf::Font font;
 
-    sf::Texture seed_t, tomato_t, pause_t, balance_icon_t, worker_icon_t, panel_t;
-    sf::Sprite seed_s, tomato_s, pause_s, balance_icon_s, worker_icon_s, panel_s;
+    sf::Texture seed_t, tomato_t, balance_icon_t, worker_icon_t, panel_t;
+    sf::Sprite seed_s, tomato_s, balance_icon_s, worker_icon_s, panel_s;
 
     //Window
     sf::Text balance_txt, worker_txt;
-    sf::Text op_nickname_txt, op_balance_txt, win_txt;
+    sf::Text op_info_txt;
 
     //Cursor
     sf::Texture shovel_t, basket_t, build_t;
@@ -100,17 +130,10 @@ public:
         worker_txt.setPosition(121, height-150);
 
         //Network
-        CreateText(op_nickname_txt, font, "Wait player", 36, sf::Color::Black);
-        op_nickname_txt.setPosition(60, height - 650);
-
-        CreateText(op_balance_txt, font, "Wait player", 36, sf::Color::Black);
-        op_balance_txt.setPosition(151, height - 650);
-
-        CreateText(win_txt, font, "", 46, sf::Color::Black);
-        win_txt.setPosition(width / 2, 100);
+        CreateText(op_info_txt, font, "Wait player", 36, sf::Color::Black);
+        op_info_txt.setPosition(60, height - 650);
 
         //Textures
-        pause_t.loadFromFile("textures/ui/pause.png");
         balance_icon_t.loadFromFile("textures/ui/balance_icon.png"); 
         worker_icon_t.loadFromFile("textures/ui/worker.png");
         panel_t.loadFromFile("textures/ui/panel.png");
@@ -132,7 +155,6 @@ public:
         build_cursor_s.setOrigin(36, 36);
 
         //Sprites
-        pause_s.setTexture(pause_t);
         balance_icon_s.setTexture(balance_icon_t);
         worker_icon_s.setTexture(worker_icon_t);
         panel_s.setTexture(panel_t);
@@ -144,7 +166,6 @@ public:
         tomato_s.setTexture(tomato_t);
         tomato_s.setPosition(-100, -100);
 
-        pause_s.setPosition(4, 4);
         balance_icon_s.setPosition(6, height-83);
         worker_icon_s.setPosition(6, height-183);
         panel_s.setPosition((width-panel_s.getLocalBounds().width)/2, height-91);
@@ -162,6 +183,17 @@ public:
         button_exitgame_txt.setPosition(-100, -100);
         button_newgame_s.setPosition(-100, -100);
         button_exitgame_s.setPosition(-100, -100);
+
+        button_blueteam_s.setPosition(-100, -100);
+        button_blueteam_txt.setPosition(-100, -100);
+        button_redteam_s.setPosition(-100, -100);
+        button_redteam_txt.setPosition(-100, -100);
+        nickname_s.setPosition(-100, -100);
+        nickname_txt.setPosition(-100, -100);
+        IPAddress_s.setPosition(-100, -100);
+        IPAddress_txt.setPosition(-100, -100);
+
+        win_txt.setString("");
     }
 
     void setAudio() {
@@ -207,10 +239,7 @@ public:
         window->draw(balance_icon_s);
         window->draw(worker_txt);
         window->draw(worker_icon_s);
-        window->draw(pause_s);
-
-        window->draw(op_nickname_txt);
-        window->draw(op_balance_txt);
+        window->draw(op_info_txt);
 
         window->draw(panel_s);
         window->draw(shovel_s);
@@ -227,11 +256,22 @@ public:
 
         //Menu
         window->draw(back_s);
-        window->draw(logo_s);
+
+        window->draw(button_redteam_s);
+        window->draw(button_redteam_txt);
+        window->draw(button_blueteam_s);
+        window->draw(button_blueteam_txt);
+        window->draw(nickname_s);
+        window->draw(nickname_txt);
+        window->draw(IPAddress_s);
+        window->draw(IPAddress_txt);
+
         window->draw(button_newgame_s);
+        window->draw(logo_s);
         window->draw(button_exitgame_s);
         window->draw(button_newgame_txt);
         window->draw(button_exitgame_txt);
         window->draw(win_txt);
+        window->draw(input_txt);
     }
 };

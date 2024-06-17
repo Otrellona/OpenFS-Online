@@ -23,7 +23,7 @@
 #include "icon.h"
 
 //variables
-const int balance_to_win = 200;
+const int balance_to_win = 300;
 const sf::Uint16 side = 10;
 TileManager TileList[side * side];
 
@@ -76,7 +76,6 @@ void receiveMessages(sf::TcpSocket& socket, AssetManager &as, string &nickname) 
 
     while (true) {
         if (socket.receive(packet) != sf::Socket::Done) {
-            std::cerr << "Error receiving data" << std::endl;
             continue;
         }
         sf::Uint16 i_t;
@@ -90,21 +89,17 @@ void receiveMessages(sf::TcpSocket& socket, AssetManager &as, string &nickname) 
         if (n != "" && nickname != n) {
 
             if (m >= balance_to_win) {
-                as.win_txt.setString(n + "Wins!");
+                as.win_txt.setString(n + " Wins!");
                 as.back_s.setPosition(0, 0);
             }
 
-            as.op_nickname_txt.setString(n);
-            as.op_balance_txt.setString(std::to_string(m));
+            as.op_info_txt.setString(n + " " + std::to_string(m));
 
-            if (c == "r") {
-                as.op_nickname_txt.setFillColor(sf::Color::Red);
-                as.op_balance_txt.setFillColor(sf::Color::Red);
-            }
-            if (c == "b") {
-                as.op_nickname_txt.setFillColor(sf::Color::Blue);
-                as.op_balance_txt.setFillColor(sf::Color::Blue);
-            }
+            if (c == "r")
+                as.op_info_txt.setFillColor(sf::Color::Red);
+
+            if (c == "b") 
+                as.op_info_txt.setFillColor(sf::Color::Blue);
         }
 
         if (c == "r") {
@@ -168,7 +163,7 @@ int main()
 
 
     //Window
-    sf::RenderWindow window(sf::VideoMode(width, height), "Open Farm Simulator", sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(width, height), "Open Farm Simulator Online Mode", sf::Style::Close);
     window.setFramerateLimit(60);
     window.setIcon(32, 32, MagickImage);
     HideConsole();
@@ -185,47 +180,11 @@ int main()
 
     //Network
     sf::TcpSocket socket;
-
-    // Устанавливаем серверный IP и порт
     sf::IpAddress serverIp;
-    std::cout << "Write server IP ";
-    std::cin >> serverIp;
-
-    unsigned short serverPort = 54000;
-
-    sf::Socket::Status status = socket.connect(serverIp, serverPort);
-    if (status != sf::Socket::Done)
-    {
-        return -1;
-    }
-
-    std::cout << "Connected to server " << serverIp << ":" << serverPort << std::endl;
-
-    int level[100];
-
-    std::cout << "Enter nickname ";
     std::string nickname;
-    std::cin >> nickname;
-
-    // Запуск потока для получения сообщений
-    std::thread receiverThread(receiveMessages, std::ref(socket), std::ref(as), std::ref(nickname));
-
-    std::cout << "Enter team (r or b) ";
     std::string team;
-    std::cin >> team;
 
-    sf::Color teamColor;
-
-    if (team == "r") {
-        teamColor = sf::Color::Red;
-    }
-
-    else if (team == "b") {
-        teamColor = sf::Color::Blue;
-    }
-
-    else
-        window.close();
+    std::thread receiverThread(receiveMessages, std::ref(socket), std::ref(as), std::ref(nickname));
 
     //Map generating
     unsigned int n = 0;
@@ -238,17 +197,6 @@ int main()
             ti.tile.setOrigin(50, 50);
             ti.tile.setTexture(as.grass_t);
             ti.color = "";
-
-            //Set tile texture
-            int tileNumber = level[i + j * 10];
-            if (tileNumber == 0) {
-                ti.isWater = false;
-            }
-
-            else {
-                ti.tile.setTexture(as.water_0_t);
-                ti.isWater = true;
-            }
 
             ti.tile.setTexture(as.grass_t);
 
@@ -272,6 +220,12 @@ int main()
     bool isShovel = false;
     bool isBasket = false;
     bool isBuild = false;
+
+    bool isTypeIp = false;
+    string IPInput;
+
+    bool isTypeNick = false;
+    string NickInput;
 
     sf::Sprite GameUiButtons[4]{as.shovel_s, as.basket_s, as.seed_s, as.build_s};
 
@@ -410,25 +364,100 @@ int main()
             else
                 setCursor(window, as.build_cursor_s, mousePositionFloat.x, mousePositionFloat.y, false);
 
+            //Input fields
+            if (isTypeIp) {
+                as.IPAddress_txt.setFillColor(sf::Color::Magenta);
+                if (event.type == sf::Event::TextEntered && IPInput.length() < 16)
+                {
+                    IPInput += event.text.unicode;
+                    as.IPAddress_txt.setString(IPInput);
+                }
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace)) {
+                    as.IPAddress_txt.setString("...");
+                    IPInput = "";
+                }
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+                    isTypeIp = !isTypeIp;
+                    as.input_txt.setPosition(-100, -100);
+                }
+            }
+            else {
+                as.IPAddress_txt.setFillColor(sf::Color::Black);
+            }
+
+            if (isTypeNick) {
+                as.nickname_txt.setFillColor(sf::Color::Magenta);
+                if (event.type == sf::Event::TextEntered && NickInput.length() < 10)
+                {
+                    NickInput += event.text.unicode;
+                    as.nickname_txt.setString(NickInput);
+                }
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace)) {
+                    as.nickname_txt.setString("...");
+                    NickInput = "";
+                }
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+                    isTypeNick = !isTypeNick;
+                    as.input_txt.setPosition(-100, -100);
+                }
+            }
+            else {
+                as.nickname_txt.setFillColor(sf::Color::Black);
+            }
+
             if (pr == false)
             {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
                 {
                     //Menu UI Clicking
-                    if (as.button_newgame_s.getGlobalBounds().contains(mousePositionFloat)) {
-                        as.CloseMenu();
-                        int server();
+                    if (as.button_newgame_s.getGlobalBounds().contains(mousePositionFloat) && team != "" && as.nickname_txt.getString() != "Enter nickname") {
+
+                        serverIp = sf::IpAddress(as.IPAddress_txt.getString());
+                        nickname = as.nickname_txt.getString();
+
+                        sf::Socket::Status status = socket.connect(serverIp, 54000);
+                        if (status != sf::Socket::Done)
+                        {
+                            as.button_newgame_txt.setString("Cannot Connect");
+                        }
+                        else
+                            as.CloseMenu();
                     }
 
+                    if (as.nickname_s.getGlobalBounds().contains(mousePositionFloat)) {
+                        if(isTypeNick == false)
+                            as.nickname_txt.setString("...");
+                        isTypeNick = !isTypeNick;
+                        isTypeIp = false;
+                        as.input_txt.setPosition((width + 200) / 2, 210);
+                    }
+
+                    if (as.IPAddress_s.getGlobalBounds().contains(mousePositionFloat)) {
+                        if (isTypeIp == false)
+                            as.IPAddress_txt.setString("...");
+                        isTypeIp = !isTypeIp;
+                        isTypeNick = false;
+                        as.input_txt.setPosition((width + 200) / 2, 310);
+                    }
+
+                    if (as.button_redteam_s.getGlobalBounds().contains(mousePositionFloat)) {
+                        as.button_blueteam_txt.setFillColor(sf::Color::Black);
+                        as.button_redteam_txt.setFillColor(sf::Color::White);
+                        team = "r";
+                    }
+
+                    if (as.button_blueteam_s.getGlobalBounds().contains(mousePositionFloat)) {
+                        as.button_blueteam_txt.setFillColor(sf::Color::White);
+                        as.button_redteam_txt.setFillColor(sf::Color::Black);
+                        team = "b";
+                    }
 
                     if (as.button_exitgame_s.getGlobalBounds().contains(mousePositionFloat))
                         window.close();
-
-                    if (as.pause_s.getGlobalBounds().contains(mousePositionFloat) && !as.back_s.getGlobalBounds().contains(mousePositionFloat)) {
-                        as.setMenuUi();
-                        as.button_newgame_txt.setString("Continue Farming");
-                        as.button_newgame_txt.move(-40, 0);
-                    }
 
                     //Game UI Clicking
                     for (int i = 0; i < std::size(GameUiButtons); i++) {
@@ -498,6 +527,7 @@ int main()
                                 if (socket.send(packet) != sf::Socket::Done) {
                                     std::cerr << "Error sending message" << std::endl;
                                 }
+
 
                                 pl.cur_worker -= 1;
                                 as.worker_txt.setString(std::to_string(pl.cur_worker) + "/" + std::to_string(pl.max_worker));
@@ -602,13 +632,6 @@ int main()
                     pr = true;
                 }
 
-                //Close game
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-                    as.setMenuUi();
-                    as.button_newgame_txt.setString("Continue Farming");
-                    as.button_newgame_txt.move(-40, 0);
-                }
-
                 //Camera
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && side * 100 >= height && zeroh > 0) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
@@ -652,4 +675,3 @@ int main()
     }
     return 0;
 }
-

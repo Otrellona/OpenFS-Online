@@ -101,7 +101,6 @@ void receiveMessages(sf::TcpSocket& socket, AssetManager &as, string &nickname) 
                 as.op_nickname_txt.setFillColor(sf::Color::Red);
                 as.op_balance_txt.setFillColor(sf::Color::Red);
             }
-
             if (c == "b") {
                 as.op_nickname_txt.setFillColor(sf::Color::Blue);
                 as.op_balance_txt.setFillColor(sf::Color::Blue);
@@ -189,7 +188,7 @@ int main()
 
     // Устанавливаем серверный IP и порт
     sf::IpAddress serverIp;
-    std::cout << "Write server IP";
+    std::cout << "Write server IP ";
     std::cin >> serverIp;
 
     unsigned short serverPort = 54000;
@@ -230,6 +229,8 @@ int main()
 
     //Map generating
     unsigned int n = 0;
+    short zerow = (width-side*100)/2;
+    short zeroh = 0;
     for (unsigned int i = 0; i < side; i++)
         for (unsigned int j = 0; j < side; j++)
         {
@@ -243,7 +244,7 @@ int main()
             if (tileNumber == 0) {
                 ti.isWater = false;
             }
-            
+
             else {
                 ti.tile.setTexture(as.water_0_t);
                 ti.isWater = true;
@@ -251,7 +252,7 @@ int main()
 
             ti.tile.setTexture(as.grass_t);
 
-            ti.tile.setPosition((width-side*100)/2 + i * 100, j * 100);
+            ti.tile.setPosition(zerow + i * 100, j * 100);
 
             //Values of tile
             ti.growtime = -1;
@@ -262,7 +263,7 @@ int main()
 
             n += 1;
         }
-    
+
 
     //Update
     bool pr = false;
@@ -343,7 +344,7 @@ int main()
                 if(TileList[i].isWater) TileList[i].tile.setTexture(as.water_0_t);
 
             clockAnim.restart();
-        } 
+        }
 
         //BuildSystem
         if (clockBuild.getElapsedTime().asSeconds() > 1)
@@ -385,13 +386,13 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            
+
             sf::Vector2f mousePositionFloat = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
 
             //Cursors
             if (isTomato)
                 setCursor(window, as.tomato_cursor_s, mousePositionFloat.x, mousePositionFloat.y, true);
-            else 
+            else
                 setCursor(window, as.tomato_cursor_s, mousePositionFloat.x, mousePositionFloat.y, false);
 
             if (isShovel)
@@ -413,12 +414,12 @@ int main()
             {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
                 {
-                    //Menu UI Clicking 
+                    //Menu UI Clicking
                     if (as.button_newgame_s.getGlobalBounds().contains(mousePositionFloat)) {
                         as.CloseMenu();
                         int server();
                     }
-                        
+
 
                     if (as.button_exitgame_s.getGlobalBounds().contains(mousePositionFloat))
                         window.close();
@@ -609,24 +610,28 @@ int main()
                 }
 
                 //Camera
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && side * 100 >= height) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && side * 100 >= height && zeroh > 0) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
                         TileList[i].tile.move(0, 25);
+                    zerow = zeroh+25;
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && side * 100 >= width) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && side * 100 >= width && zerow+side*100 < width) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
                         TileList[i].tile.move(-25, 0);
+                    zerow = zerow-25;
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && side * 100 >= height) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && side * 100 >= height && zeroh+side*100 < height) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
                         TileList[i].tile.move(0, -25);
+                    zerow = zeroh-25;
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && side * 100 >= width) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && side * 100 >= width && zerow > 0) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
                         TileList[i].tile.move(25, 0);
+                    zerow = zerow+25;
                 }
             }
             else if (event.type == sf::Event::MouseButtonReleased || event.type == sf::Event::KeyReleased) pr = false;

@@ -20,9 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AssetManager.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerManager.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -38,7 +35,7 @@
     <ClInclude Include="icon.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkClient.hpp">
+    <ClInclude Include="AssetManager.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

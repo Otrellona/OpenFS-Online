@@ -143,7 +143,6 @@
     <ClInclude Include="AssetManager.hpp" />
     <ClInclude Include="GenerationManager.hpp" />
     <ClInclude Include="icon.h" />
-    <ClInclude Include="NetworkClient.hpp" />
     <ClInclude Include="PlayerManager.hpp" />
     <ClInclude Include="ShopManager.hpp" />
     <ClInclude Include="TileManager.hpp" />

@@ -83,10 +83,9 @@ public:
     sf::Sound dig_sound_a, plant_sound_a, gather_sound_a;
 
     //Tiles
-    sf::Texture grass_t, dirt_t, tomato_bed_1_t, tomato_bed_2_t, tomato_bed_3_t, tomato_bed_rot_t, grass_house_t;
-    sf::Texture grass_clock_t;
-    sf::Texture water_0_t, water_1_t;
-    sf::Sprite house_s;
+    sf::Texture dirt_t_r, tomato_bed_1_t_r, tomato_bed_2_t_r, tomato_bed_3_t_r, tomato_bed_rot_t_r, grass_house_t_r, grass_clock_t_r;
+    sf::Texture dirt_t_b, tomato_bed_1_t_b, tomato_bed_2_t_b, tomato_bed_3_t_b, tomato_bed_rot_t_b, grass_house_t_b, grass_clock_t_b;
+    sf::Texture grass_t, water_0_t, water_1_t;
 
     //Game Load
     void setGameUI(int money_p, int max_worker) {
@@ -182,19 +181,24 @@ public:
 
     void setTiles() {
         grass_t.loadFromFile("textures/tiles/grass.png");
-        dirt_t.loadFromFile("textures/tiles/dirt.png");
-
-        tomato_bed_1_t.loadFromFile("textures/tiles/tomato_bed_1.png");
-        tomato_bed_2_t.loadFromFile("textures/tiles/tomato_bed_2.png");
-        tomato_bed_3_t.loadFromFile("textures/tiles/tomato_bed_3.png");
-        tomato_bed_rot_t.loadFromFile("textures/tiles/tomato_bed_rot.png");
-
         water_0_t.loadFromFile("textures/tiles/water_0.png");
         water_1_t.loadFromFile("textures/tiles/water_1.png");
 
-        grass_clock_t.loadFromFile("textures/tiles/grass_clock.png");
+        dirt_t_r.loadFromFile("textures/tiles/dirt_r.png");
+        tomato_bed_1_t_r.loadFromFile("textures/tiles/tomato_bed_1_r.png");
+        tomato_bed_2_t_r.loadFromFile("textures/tiles/tomato_bed_2_r.png");
+        tomato_bed_3_t_r.loadFromFile("textures/tiles/tomato_bed_3_r.png");
+        tomato_bed_rot_t_r.loadFromFile("textures/tiles/tomato_bed_rot_r.png");
+        grass_clock_t_r.loadFromFile("textures/tiles/grass_clock_r.png");
+        grass_house_t_r.loadFromFile("textures/tiles/grass_house_r.png");
 
-        grass_house_t.loadFromFile("textures/tiles/grass_house.png");
+        dirt_t_b.loadFromFile("textures/tiles/dirt_b.png");
+        tomato_bed_1_t_b.loadFromFile("textures/tiles/tomato_bed_1_b.png");
+        tomato_bed_2_t_b.loadFromFile("textures/tiles/tomato_bed_2_b.png");
+        tomato_bed_3_t_b.loadFromFile("textures/tiles/tomato_bed_3_b.png");
+        tomato_bed_rot_t_b.loadFromFile("textures/tiles/tomato_bed_rot_b.png");
+        grass_clock_t_b.loadFromFile("textures/tiles/grass_clock_b.png");
+        grass_house_t_b.loadFromFile("textures/tiles/grass_house_b.png");
     }
 
     void DrawUI(sf::RenderWindow* window) {

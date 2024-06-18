@@ -12,8 +12,8 @@ Value Names:
 6) _p - Player Data
 */
 
-int width = 1280;
-int height = 720;
+int width = 960;
+int height = 600;
 
 using namespace std;
 void CreateText(sf::Text& text, sf::Font& font, string txt, int size, sf::Color color) {
@@ -197,6 +197,8 @@ public:
         button_redteam_txt.setPosition(-100, -100);
         resolution_s.setPosition(-100, -100);
         resolution_s.setPosition(-100, -100);
+        resolution_txt.setPosition(-100, -100);
+        resolution_txt.setPosition(-100, -100);
         button_newgame_txt.setPosition(-100, -100);
         button_exitgame_txt.setPosition(-100, -100);
         button_newgame_s.setPosition(-100, -100);

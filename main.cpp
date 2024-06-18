@@ -184,19 +184,20 @@ int main()
 
     //Map generating
     unsigned int n = 0;
-    short zerow = (width-side*100)/2;
-    short zeroh = (height-side*100)/2/25*25;
+    unsigned char scale = 3;
+    short zerow = (width-side*32*scale)/2;
+    short zeroh = (height-side*32*scale)/2/24*24;
     for (unsigned int i = 0; i < side; i++)
         for (unsigned int j = 0; j < side; j++)
         {
             //Config of tile
             ti.tile.setScale(sf::Vector2f(1.f, 1.f));
             ti.tile.setOrigin(8, 8);
-            ti.tile.setScale(6.25f, 6.25f);
+            ti.tile.setScale(scale, scale);
             ti.tile.setTexture(as.grass_t);
             ti.color = "";
 
-            ti.tile.setPosition(zerow + i * 100, j * 100);
+            ti.tile.setPosition(zerow + i * 32*scale, zeroh + j * 32*scale);
 
             //Values of tile
             ti.growtime = -1;
@@ -439,9 +440,12 @@ int main()
                     }
 
                     if (as.resolution_s.getGlobalBounds().contains(mousePositionFloat)) {
-                        width = width*2;
-                        height = height*2;
-                        window.setSize(sf::Vector2u(height, width));
+                        width = width+960;
+                        height = height+600;
+                        window.setSize(sf::Vector2u(width, height));
+                        as.CloseMenu();
+//                        as.setMenuUi();
+//                        as.setTiles();
                         as.click_sound_a.play();
                     }
 
@@ -589,28 +593,28 @@ int main()
                 }
 
                 //Camera
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && side * 100 >= height && zeroh > 0) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && side * 32*scale >= height && zeroh > 0) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
-                        TileList[i].tile.move(0, 25);
-                    zerow = zeroh+25;
+                        TileList[i].tile.move(0, 24);
+                    zerow = zeroh+24;
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && side * 100 >= width && zerow+side*100 < width) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && side * 32*scale >= width && zerow+side*32*scale < width) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
-                        TileList[i].tile.move(-25, 0);
-                    zerow = zerow-25;
+                        TileList[i].tile.move(-24, 0);
+                    zerow = zerow-24;
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && side * 100 >= height && zeroh+side*100 < height) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && side * 32*scale >= height && zeroh+side*32*scale < height) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
-                        TileList[i].tile.move(0, -25);
-                    zerow = zeroh-25;
+                        TileList[i].tile.move(0, -24);
+                    zerow = zeroh-24;
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && side * 100 >= width && zerow > 0) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && side * 32*scale >= width && zerow > 0) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
-                        TileList[i].tile.move(25, 0);
-                    zerow = zerow+25;
+                        TileList[i].tile.move(24, 0);
+                    zerow = zerow+24;
                 }
             }
             else if (event.type == sf::Event::MouseButtonReleased || event.type == sf::Event::KeyReleased) pr = false;

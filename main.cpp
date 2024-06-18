@@ -99,16 +99,15 @@ void receiveMessages(sf::TcpSocket& socket, AssetManager &as, string &nickname) 
             if (c == "r")
                 as.op_info_txt.setFillColor(sf::Color::Red);
 
-            if (c == "b") 
+            if (c == "b")
                 as.op_info_txt.setFillColor(sf::Color::Blue);
         }
 
         if (c == "r") {
             TileList[i_t].color = "r";
 
-            if (t == "grass_clock_t") {
+            if (t == "grass_clock_t")
                 TileList[i_t].tile.setTexture(as.grass_clock_t_r);
-            }
 
             if (t == "tomato_bed_1_t") {
                 TileList[i_t].tile.setTexture(as.tomato_bed_1_t_r);
@@ -130,9 +129,8 @@ void receiveMessages(sf::TcpSocket& socket, AssetManager &as, string &nickname) 
         if (c == "b") {
             TileList[i_t].color = "b";
 
-            if (t == "grass_clock_t") {
+            if (t == "grass_clock_t")
                 TileList[i_t].tile.setTexture(as.grass_clock_t_b);
-            }
 
             if (t == "tomato_bed_1_t") {
                 TileList[i_t].tile.setTexture(as.tomato_bed_1_t_b);
@@ -437,6 +435,13 @@ int main()
                         as.button_blueteam_txt.setFillColor(sf::Color::White);
                         as.button_redteam_txt.setFillColor(sf::Color::Black);
                         team = "b";
+                        as.click_sound_a.play();
+                    }
+
+                    if (as.resolution_s.getGlobalBounds().contains(mousePositionFloat)) {
+                        width = width*2;
+                        height = height*2;
+                        window.setSize(sf::Vector2u(height, width));
                         as.click_sound_a.play();
                     }
 

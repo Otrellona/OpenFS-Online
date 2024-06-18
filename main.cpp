@@ -22,7 +22,7 @@
 #include "ShopManager.hpp"
 #include "icon.h"
 
-//variables
+//Game variables
 const int balance_to_win = 300;
 const sf::Uint16 side = 10;
 TileManager TileList[side * side];
@@ -33,7 +33,7 @@ void HideConsole()
     HWND Hide;
     AllocConsole();
     Hide = FindWindowA("ConsoleWindowClass", NULL);
-    ShowWindow(Hide, 1);
+    ShowWindow(Hide, 0);
 #endif
 }
 
@@ -78,6 +78,7 @@ void receiveMessages(sf::TcpSocket& socket, AssetManager &as, string &nickname) 
         if (socket.receive(packet) != sf::Socket::Done) {
             continue;
         }
+
         sf::Uint16 i_t;
         string t;
         string c;
@@ -105,48 +106,48 @@ void receiveMessages(sf::TcpSocket& socket, AssetManager &as, string &nickname) 
         if (c == "r") {
             TileList[i_t].color = "r";
 
-            if (t == "grass_clock_t_r") {
+            if (t == "grass_clock_t") {
                 TileList[i_t].tile.setTexture(as.grass_clock_t_r);
             }
 
-            if (t == "tomato_bed_1_t_r") {
+            if (t == "tomato_bed_1_t") {
                 TileList[i_t].tile.setTexture(as.tomato_bed_1_t_r);
                 TileList[i_t].growtime = 10;
             }
 
-            if (t == "tomato_bed_2_t_r")
+            if (t == "tomato_bed_2_t")
                 TileList[i_t].tile.setTexture(as.tomato_bed_2_t_r);
-            if (t == "tomato_bed_3_t_r")
+            if (t == "tomato_bed_3_t")
                 TileList[i_t].tile.setTexture(as.tomato_bed_3_t_r);
-            if (t == "tomato_bed_rot_t_r")
+            if (t == "tomato_bed_rot_t")
                 TileList[i_t].tile.setTexture(as.tomato_bed_rot_t_r);
-            if (t == "grass_house_t_r")
+            if (t == "grass_house_t")
                 TileList[i_t].tile.setTexture(as.grass_house_t_r);
-            if (t == "dirt_t_r")
+            if (t == "dirt_t")
                 TileList[i_t].tile.setTexture(as.dirt_t_r);
         }
 
         if (c == "b") {
             TileList[i_t].color = "b";
 
-            if (t == "grass_clock_t_b") {
+            if (t == "grass_clock_t") {
                 TileList[i_t].tile.setTexture(as.grass_clock_t_b);
             }
 
-            if (t == "tomato_bed_1_t_b") {
+            if (t == "tomato_bed_1_t") {
                 TileList[i_t].tile.setTexture(as.tomato_bed_1_t_b);
                 TileList[i_t].growtime = 10;
             }
 
-            if (t == "tomato_bed_2_t_b")
+            if (t == "tomato_bed_2_t")
                 TileList[i_t].tile.setTexture(as.tomato_bed_2_t_b);
-            if (t == "tomato_bed_3_t_b")
+            if (t == "tomato_bed_3_t")
                 TileList[i_t].tile.setTexture(as.tomato_bed_3_t_b);
-            if (t == "tomato_bed_rot_t_b")
+            if (t == "tomato_bed_rot_t")
                 TileList[i_t].tile.setTexture(as.tomato_bed_rot_t_b);
-            if (t == "grass_house_t_b")
+            if (t == "grass_house_t")
                 TileList[i_t].tile.setTexture(as.grass_house_t_b);
-            if (t == "dirt_t_b")
+            if (t == "dirt_t")
                 TileList[i_t].tile.setTexture(as.dirt_t_b);
         }
     }
@@ -160,7 +161,6 @@ int main()
     AssetManager as;
     TileManager ti;
     ShopManager sh;
-
 
     //Window
     sf::RenderWindow window(sf::VideoMode(width, height), "Open Farm Simulator Online Mode", sf::Style::Close);
@@ -177,13 +177,11 @@ int main()
     as.setAudio();
     as.setTiles();
 
-
-    //Network
+    //Load network
     sf::TcpSocket socket;
     sf::IpAddress serverIp;
     std::string nickname;
     std::string team;
-
     std::thread receiverThread(receiveMessages, std::ref(socket), std::ref(as), std::ref(nickname));
 
     //Map generating
@@ -193,12 +191,12 @@ int main()
     for (unsigned int i = 0; i < side; i++)
         for (unsigned int j = 0; j < side; j++)
         {
+            //Config of tile
             ti.tile.setScale(sf::Vector2f(1.f, 1.f));
-            ti.tile.setOrigin(50, 50);
+            ti.tile.setOrigin(8, 8);
+            ti.tile.setScale(6.25f, 6.25f);
             ti.tile.setTexture(as.grass_t);
             ti.color = "";
-
-            ti.tile.setTexture(as.grass_t);
 
             ti.tile.setPosition(zerow + i * 100, j * 100);
 
@@ -207,11 +205,10 @@ int main()
             ti.digtime = -1;
             ti.planttime = -1;
             ti.gathertime = -1;
-            TileList[n] = ti;
 
+            TileList[n] = ti;
             n += 1;
         }
-
 
     //Update
     bool pr = false;
@@ -235,6 +232,7 @@ int main()
 
     while (window.isOpen())
     {
+        //Win
         if (pl.money_p >= balance_to_win) {
             as.win_txt.setString("You win!");
             as.back_s.setPosition(0, 0);
@@ -250,11 +248,7 @@ int main()
 
                 if (TileList[i].growtime == 5) {
                     sf::Uint16 i_t = i;
-                    string t;
-                    if(TileList[i].color == "r")
-                        t = "tomato_bed_2_t_r";
-                    if (TileList[i].color == "b")
-                        t = "tomato_bed_2_t_b";
+                    string t = "tomato_bed_2_t";
                     string c = TileList[i].color;
                     sf::Packet packet;
                     packet << i_t << t << c;
@@ -266,11 +260,7 @@ int main()
 
                 if (TileList[i].growtime == 0) {
                     sf::Uint16 i_t = i;
-                    string t;
-                    if (TileList[i].color == "r")
-                        t = "tomato_bed_3_t_r";
-                    if (TileList[i].color == "b")
-                        t = "tomato_bed_3_t_b";
+                    string t = "tomato_bed_3_t";
                     string c = TileList[i].color;
                     sf::Packet packet;
                     packet << i_t << t << c;
@@ -315,11 +305,7 @@ int main()
                     as.worker_txt.setString(std::to_string(pl.cur_worker) + "/" + std::to_string(pl.max_worker));
 
                     sf::Uint16 i_t = i;
-                    string t;
-                    if (TileList[i].color == "r")
-                        t = "dirt_t_r";
-                    if (TileList[i].color == "b")
-                        t = "dirt_t_b";
+                    string t = "dirt_t";
                     string c = team;
                     sf::Packet packet;
                     packet << i_t << t << c;
@@ -409,6 +395,7 @@ int main()
                 as.nickname_txt.setFillColor(sf::Color::Black);
             }
 
+
             if (pr == false)
             {
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -426,6 +413,8 @@ int main()
                         }
                         else
                             as.CloseMenu();
+
+                        as.click_sound_a.play();
                     }
 
                     if (as.nickname_s.getGlobalBounds().contains(mousePositionFloat)) {
@@ -434,6 +423,7 @@ int main()
                         isTypeNick = !isTypeNick;
                         isTypeIp = false;
                         as.input_txt.setPosition((width + 200) / 2, 210);
+                        as.click_sound_a.play();
                     }
 
                     if (as.IPAddress_s.getGlobalBounds().contains(mousePositionFloat)) {
@@ -442,18 +432,21 @@ int main()
                         isTypeIp = !isTypeIp;
                         isTypeNick = false;
                         as.input_txt.setPosition((width + 200) / 2, 310);
+                        as.click_sound_a.play();
                     }
 
                     if (as.button_redteam_s.getGlobalBounds().contains(mousePositionFloat)) {
                         as.button_blueteam_txt.setFillColor(sf::Color::Black);
                         as.button_redteam_txt.setFillColor(sf::Color::White);
                         team = "r";
+                        as.click_sound_a.play();
                     }
 
                     if (as.button_blueteam_s.getGlobalBounds().contains(mousePositionFloat)) {
                         as.button_blueteam_txt.setFillColor(sf::Color::White);
                         as.button_redteam_txt.setFillColor(sf::Color::Black);
                         team = "b";
+                        as.click_sound_a.play();
                     }
 
                     if (as.button_exitgame_s.getGlobalBounds().contains(mousePositionFloat))
@@ -509,17 +502,11 @@ int main()
                                 TileList[i].digtime = 3;
 
                                 sf::Uint16 i_t = i;
-                                string t;
+                                string t = "grass_clock_t";
                                 string c = team;
 
                                 string n = nickname;
                                 sf::Uint16 m = pl.money_p;
-
-                                if (team == "r")
-                                    t = "grass_clock_t_r";
-
-                                if (team == "b")
-                                    t = "grass_clock_t_b";
 
                                 sf::Packet packet;
                                 packet << i_t << t << c << n << m;
@@ -539,18 +526,12 @@ int main()
                             if (isTomato == true && (TileList[i].tile.getTexture() == &as.dirt_t_b || TileList[i].tile.getTexture() == &as.dirt_t_r)) {
                                 Plant(TileList[i], as.balance_txt, pl, sh.tomato_seed_buy_cost, TileList[i].tomato_grow_time, as.plant_sound_a);
 
-                                string t;
+                                string t = "tomato_bed_1_t";
                                 sf::Uint16 i_t = i;
                                 string c = team;
 
                                 string n = nickname;
                                 sf::Uint16 m = pl.money_p;
-
-                                if (team == "r")
-                                    t = "tomato_bed_1_t_r";
-
-                                if (team == "b")
-                                    t = "tomato_bed_1_t_b";
 
                                 TileList[i].color = team;
 
@@ -567,27 +548,17 @@ int main()
                                 Gather(TileList[i], pl, as.balance_txt, sh.tomato_sell_cost, TileList[i].tomato_grow_time, as.gather_sound_a);
 
                                 string t;
+                                if (TileList[i].lives > 0)
+                                    t = "tomato_bed_1_t";
+                                else
+                                    t = "tomato_bed_rot_t";
+
                                 sf::Uint16 i_t = i;
                                 string c = team;
                                 string n = nickname;
                                 sf::Uint16 m = pl.money_p;
 
                                 TileList[i].color = team;
-
-                                if (TileList[i].lives > 0) {
-                                    if (team == "r")
-                                        t = "tomato_bed_1_t_r";
-
-                                    if (team == "b")
-                                        t = "tomato_bed_1_t_b";
-                                }
-                                else {
-                                    if (team == "r")
-                                        t = "tomato_bed_rot_t_r";
-
-                                    if (team == "b")
-                                        t = "tomato_bed_rot_t_b";
-                                }
 
                                 sf::Packet packet;
                                 packet << i_t << t << c << n << m;
@@ -596,7 +567,6 @@ int main()
                                     std::cerr << "Error sending message" << std::endl;
                                 }
                             }
-
 
                             //Build worker house
                             if (isBuild && TileList[i].tile.getTexture() == &as.grass_t && pl.money_p >= 50) {
@@ -609,16 +579,11 @@ int main()
 
                                 sf::Uint16 i_t = i;
                                 string c = team;
-                                string t;
+                                string t = "grass_house_t";
                                 string n = nickname;
                                 sf::Uint16 m = pl.money_p;
 
                                 TileList[i].color = team;
-                                if (team == "r")
-                                    t = "grass_house_t_r";
-
-                                if (team == "b")
-                                    t = "grass_house_t_b";
 
                                 sf::Packet packet;
                                 packet << i_t << t << c << n << m;
@@ -626,6 +591,8 @@ int main()
                                 if (socket.send(packet) != sf::Socket::Done) {
                                     std::cerr << "Error sending message" << std::endl;
                                 }
+
+                                as.build_sound_a.play();
                             }
                         }
                     }
@@ -659,7 +626,6 @@ int main()
             }
             else if (event.type == sf::Event::MouseButtonReleased || event.type == sf::Event::KeyReleased) pr = false;
         }
-
 
         //Render
         window.clear(sf::Color(127, 195, 255));

@@ -30,7 +30,7 @@ public:
     sf::Texture logo_t, button_menu_t, back_t;
     sf::Text button_newgame_txt, button_exitgame_txt, nickname_txt, IPAddress_txt, button_redteam_txt, button_blueteam_txt, win_txt, input_txt;
     sf::Sprite logo_s, button_newgame_s, button_exitgame_s, back_s, nickname_s, IPAddress_s, button_redteam_s, button_blueteam_s;
-    sf::Music back_music, a;
+    sf::Music back_music;
 
     void setMenuUi() {
         MenuFont.loadFromFile("textures/font/arial.ttf");
@@ -109,8 +109,8 @@ public:
     sf::Sprite tomato_cursor_s, shovel_cursor_s, basket_cursor_s, build_cursor_s;
 
     //Audio
-    sf::SoundBuffer dig_sound_b, plant_sound_b, gather_sound_b;
-    sf::Sound dig_sound_a, plant_sound_a, gather_sound_a;
+    sf::SoundBuffer dig_sound_b, plant_sound_b, gather_sound_b, build_sound_b, click_sound_b;
+    sf::Sound dig_sound_a, plant_sound_a, gather_sound_a, build_sound_a, click_sound_a;
 
     //Tiles
     sf::Texture dirt_t_r, tomato_bed_1_t_r, tomato_bed_2_t_r, tomato_bed_3_t_r, tomato_bed_rot_t_r, grass_house_t_r, grass_clock_t_r;
@@ -177,13 +177,16 @@ public:
     }
     //Remove Menu
     void CloseMenu() {
-        logo_s.setPosition(-100, -100);
         back_s.setPosition(-10000, -10000);
+        win_txt.setString("");
+
+        logo_s.setPosition(-100, -100);
+        
         button_newgame_txt.setPosition(-100, -100);
         button_exitgame_txt.setPosition(-100, -100);
         button_newgame_s.setPosition(-100, -100);
         button_exitgame_s.setPosition(-100, -100);
-
+        
         button_blueteam_s.setPosition(-100, -100);
         button_blueteam_txt.setPosition(-100, -100);
         button_redteam_s.setPosition(-100, -100);
@@ -192,8 +195,6 @@ public:
         nickname_txt.setPosition(-100, -100);
         IPAddress_s.setPosition(-100, -100);
         IPAddress_txt.setPosition(-100, -100);
-
-        win_txt.setString("");
     }
 
     void setAudio() {
@@ -205,6 +206,12 @@ public:
 
         gather_sound_b.loadFromFile("audio/gather_sound.ogg");
         gather_sound_a.setBuffer(gather_sound_b);
+
+        build_sound_b.loadFromFile("audio/build_sound.ogg");
+        build_sound_a.setBuffer(build_sound_b);
+
+        click_sound_b.loadFromFile("audio/click_sound.ogg");
+        click_sound_a.setBuffer(click_sound_b);
 
         back_music.openFromFile("audio/back_music.ogg");
         back_music.setLoop(true);

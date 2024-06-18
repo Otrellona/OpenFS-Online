@@ -187,7 +187,7 @@ int main()
     //Map generating
     unsigned int n = 0;
     short zerow = (width-side*100)/2;
-    short zeroh = 0;
+    short zeroh = (height-side*100)/2/25*25;
     for (unsigned int i = 0; i < side; i++)
         for (unsigned int j = 0; j < side; j++)
         {
@@ -242,9 +242,8 @@ int main()
         if (clockGrow.getElapsedTime().asSeconds() > 1)
         {
             for (unsigned int i = 0; i < std::size(TileList); i++) {
-                if (TileList[i].growtime != -1) {
+                if (TileList[i].growtime != -1)
                     TileList[i].growtime -= 1;
-                }
 
                 if (TileList[i].growtime == 5) {
                     sf::Uint16 i_t = i;
@@ -253,9 +252,8 @@ int main()
                     sf::Packet packet;
                     packet << i_t << t << c;
 
-                    if (socket.send(packet) != sf::Socket::Done) {
+                    if (socket.send(packet) != sf::Socket::Done)
                         std::cerr << "Error sending message" << std::endl;
-                    }
                 }
 
                 if (TileList[i].growtime == 0) {
@@ -264,9 +262,8 @@ int main()
                     string c = TileList[i].color;
                     sf::Packet packet;
                     packet << i_t << t << c;
-                    if (socket.send(packet) != sf::Socket::Done) {
+                    if (socket.send(packet) != sf::Socket::Done)
                         std::cerr << "Error sending message" << std::endl;
-                    }
 
                     TileList[i].growtime = -1;
                 }
@@ -294,9 +291,8 @@ int main()
         if (clockBuild.getElapsedTime().asSeconds() > 1)
         {
             for (unsigned int i = 0; i < std::size(TileList); i++) {
-                if (TileList[i].digtime != -1) {
+                if (TileList[i].digtime != -1)
                     TileList[i].digtime -= 1;
-                }
 
                 if (TileList[i].digtime == 0) {
                     //TileList[i].tile.setTexture(as.dirt_t);
@@ -310,9 +306,8 @@ int main()
                     sf::Packet packet;
                     packet << i_t << t << c;
 
-                    if (socket.send(packet) != sf::Socket::Done) {
+                    if (socket.send(packet) != sf::Socket::Done)
                         std::cerr << "Error sending message" << std::endl;
-                    }
                 }
             }
 
@@ -353,8 +348,7 @@ int main()
             //Input fields
             if (isTypeIp) {
                 as.IPAddress_txt.setFillColor(sf::Color::Magenta);
-                if (event.type == sf::Event::TextEntered && IPInput.length() < 16)
-                {
+                if (event.type == sf::Event::TextEntered && IPInput.length() < 16) {
                     IPInput += event.text.unicode;
                     as.IPAddress_txt.setString(IPInput);
                 }
@@ -375,8 +369,7 @@ int main()
 
             if (isTypeNick) {
                 as.nickname_txt.setFillColor(sf::Color::Magenta);
-                if (event.type == sf::Event::TextEntered && NickInput.length() < 10)
-                {
+                if (event.type == sf::Event::TextEntered && NickInput.length() < 10) {
                     NickInput += event.text.unicode;
                     as.nickname_txt.setString(NickInput);
                 }
@@ -408,9 +401,7 @@ int main()
 
                         sf::Socket::Status status = socket.connect(serverIp, 54000);
                         if (status != sf::Socket::Done)
-                        {
                             as.button_newgame_txt.setString("Cannot Connect");
-                        }
                         else
                             as.CloseMenu();
 
@@ -455,8 +446,7 @@ int main()
                     //Game UI Clicking
                     for (int i = 0; i < std::size(GameUiButtons); i++) {
                         if (GameUiButtons[i].getGlobalBounds().contains(mousePositionFloat) && !as.back_s.getGlobalBounds().contains(mousePositionFloat)) {
-                            switch (i)
-                            {
+                            switch (i) {
                             //Shovel
                             case 0:
                                 isShovel = !isShovel;
@@ -493,10 +483,8 @@ int main()
 
 
                     //Editing Tiles
-                    for (unsigned int i = 0; i < std::size(TileList); i++)
-                    {
-                        if (TileList[i].tile.getGlobalBounds().contains(mousePositionFloat) && !as.panel_s.getGlobalBounds().contains(mousePositionFloat) && pl.cur_worker != 0 && (TileList[i].color == "" || TileList[i].color == team))
-                        {
+                    for (unsigned int i = 0; i < std::size(TileList); i++) {
+                        if (TileList[i].tile.getGlobalBounds().contains(mousePositionFloat) && !as.panel_s.getGlobalBounds().contains(mousePositionFloat) && pl.cur_worker != 0 && (TileList[i].color == "" || TileList[i].color == team)) {
                             //Dig bed
                             if (isShovel == true && (TileList[i].tile.getTexture() == &as.grass_t || TileList[i].tile.getTexture() == &as.tomato_bed_rot_t_b || TileList[i].tile.getTexture() == &as.tomato_bed_rot_t_r)) {
                                 TileList[i].digtime = 3;
@@ -511,9 +499,8 @@ int main()
                                 sf::Packet packet;
                                 packet << i_t << t << c << n << m;
 
-                                if (socket.send(packet) != sf::Socket::Done) {
+                                if (socket.send(packet) != sf::Socket::Done)
                                     std::cerr << "Error sending message" << std::endl;
-                                }
 
 
                                 pl.cur_worker -= 1;
@@ -538,9 +525,8 @@ int main()
                                 sf::Packet packet;
                                 packet << i_t << t << c << n << m;
 
-                                if (socket.send(packet) != sf::Socket::Done) {
+                                if (socket.send(packet) != sf::Socket::Done)
                                     std::cerr << "Error sending message" << std::endl;
-                                }
                             }
 
                             //Gather tomato
@@ -563,9 +549,8 @@ int main()
                                 sf::Packet packet;
                                 packet << i_t << t << c << n << m;
 
-                                if (socket.send(packet) != sf::Socket::Done) {
+                                if (socket.send(packet) != sf::Socket::Done)
                                     std::cerr << "Error sending message" << std::endl;
-                                }
                             }
 
                             //Build worker house
@@ -588,9 +573,8 @@ int main()
                                 sf::Packet packet;
                                 packet << i_t << t << c << n << m;
 
-                                if (socket.send(packet) != sf::Socket::Done) {
+                                if (socket.send(packet) != sf::Socket::Done)
                                     std::cerr << "Error sending message" << std::endl;
-                                }
 
                                 as.build_sound_a.play();
                             }

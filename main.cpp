@@ -593,7 +593,7 @@ int main()
                 }
 
                 //Camera
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && side * 32*scale >= height && zeroh > 0) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) /* && side * 32 * scale >= height && zeroh > 0*/) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
                         TileList[i].tile.move(0, 24);
                     zerow = zeroh+24;
@@ -605,7 +605,7 @@ int main()
                     zerow = zerow-24;
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && side * 32*scale >= height && zeroh+side*32*scale < height) {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) /* && side * 32 * scale >= height && zeroh + side * 32 * scale < height*/) {
                     for (unsigned int i = 0; i < std::size(TileList); i++)
                         TileList[i].tile.move(0, -24);
                     zerow = zeroh-24;

@@ -12,8 +12,8 @@ Value Names:
 6) _p - Player Data
 */
 
-int width = 960;
-int height = 600;
+int width = 1280;
+int height = 720;
 
 using namespace std;
 void CreateText(sf::Text& text, sf::Font& font, string txt, int size, sf::Color color) {
@@ -33,7 +33,7 @@ public:
     sf::Music back_music;
 
     void setMenuUi() {
-        MenuFont.loadFromFile("textures/font/arial.ttf");
+        MenuFont.loadFromFile("textures/font/Keleti-Regular.ttf");
 
         CreateText(win_txt, font, "You have to earn $300 to win", 46, sf::Color::Black);
         win_txt.setOrigin(win_txt.getLocalBounds().width / 2, win_txt.getLocalBounds().height / 2);
@@ -64,38 +64,44 @@ public:
         back_s.setScale(width / back_s.getLocalBounds().width, height / back_s.getLocalBounds().height);
 
         nickname_s.setTexture(button_menu_t);
+        nickname_s.setScale(2, 2);
         nickname_s.setPosition((width - 222) / 2, 200);
 
         IPAddress_s.setTexture(button_menu_t);
+        IPAddress_s.setScale(2, 2);
         IPAddress_s.setPosition((width - 222) / 2, 300);
 
         button_redteam_s.setTexture(button_menu_t);
         button_redteam_s.setColor(sf::Color::Red);
+        button_redteam_s.setScale(2, 2);
         button_redteam_s.setPosition((width - 672) / 2, 400);
 
         button_blueteam_s.setTexture(button_menu_t);
         button_blueteam_s.setColor(sf::Color::Blue);
+        button_blueteam_s.setScale(2, 2);
         button_blueteam_s.setPosition((width + 312) / 2, 400);
 
-        resolution_s.setTexture(button_menu_t);
-        resolution_s.setPosition((width-222)/2, 480);
+        //resolution_s.setTexture(button_menu_t);
+        //resolution_s.setPosition((width-222)/2, 480);
 
 
         button_newgame_s.setTexture(button_menu_t);
+        button_newgame_s.setScale(2, 2);
         button_newgame_s.setPosition((width - 222)/2, 550);
 
 
         button_exitgame_s.setTexture(button_menu_t);
+        button_exitgame_s.setScale(2, 2);
         button_exitgame_s.setPosition((width-222)/2, 650);
 
         //Text
-        nickname_txt.setPosition((width - 190) / 2, 210);
-        IPAddress_txt.setPosition((width - 190) / 2, 310);
-        button_redteam_txt.setPosition((width - 550) / 2, 410);
-        button_blueteam_txt.setPosition((width + 420) / 2, 410);
-        resolution_txt.setPosition((width-120)/2, 490);
-        button_newgame_txt.setPosition((width-195)/2, 560);
-        button_exitgame_txt.setPosition((width-40)/2, 660);
+        nickname_txt.setPosition((width - 190) / 2, 205);
+        IPAddress_txt.setPosition((width - 190) / 2, 305);
+        button_redteam_txt.setPosition((width - 550) / 2, 405);
+        button_blueteam_txt.setPosition((width + 420) / 2, 405);
+        //resolution_txt.setPosition((width-120)/2, 490);
+        button_newgame_txt.setPosition((width-195)/2, 555);
+        button_exitgame_txt.setPosition((width-40)/2, 655);
     }
 
     //Game UI
@@ -125,7 +131,7 @@ public:
     //Game Load
     void setGameUI(int money_p, int max_worker) {
         //Font
-        font.loadFromFile("textures/font/arial.ttf");
+        font.loadFromFile("textures/font/Keleti-Regular.ttf");
 
         //Text
         CreateText(balance_txt, font, std::to_string(money_p) + "$", 36, sf::Color::Black);
@@ -150,30 +156,45 @@ public:
         tomato_t.loadFromFile("textures/ui/tomato.png");
 
         tomato_cursor_s.setTexture(tomato_t);
-        tomato_cursor_s.setOrigin(25, 25);
+        tomato_cursor_s.setScale(3, 3);
+        tomato_cursor_s.setOrigin(tomato_cursor_s.getLocalBounds().width / 2, tomato_cursor_s.getLocalBounds().height / 2);
 
         shovel_cursor_s.setTexture(shovel_t);
-        shovel_cursor_s.setOrigin(36, 36);
+        shovel_cursor_s.setScale(3, 3);
+        shovel_cursor_s.setOrigin(shovel_cursor_s.getLocalBounds().width / 2, shovel_cursor_s.getLocalBounds().height / 2);
+
         basket_cursor_s.setTexture(basket_t);
-        basket_cursor_s.setOrigin(36, 36);
+        basket_cursor_s.setScale(3, 3);
+        basket_cursor_s.setOrigin(basket_cursor_s.getLocalBounds().width / 2, basket_cursor_s.getLocalBounds().height / 2);
+
         build_cursor_s.setTexture(build_t);
-        build_cursor_s.setOrigin(36, 36);
+        build_cursor_s.setScale(3, 3);
+        build_cursor_s.setOrigin(build_cursor_s.getLocalBounds().width / 2, build_cursor_s.getLocalBounds().height / 2);
 
         //Sprites
         balance_icon_s.setTexture(balance_icon_t);
+        balance_icon_s.setScale(3, 3);
         worker_icon_s.setTexture(worker_icon_t);
+        worker_icon_s.setScale(3, 3);
         panel_s.setTexture(panel_t);
+        panel_s.setScale(6, 8.5f);
         shovel_s.setTexture(shovel_t);
+        shovel_s.setScale(3, 3);
         seed_s.setTexture(seed_t);
+        seed_s.setScale(3, 3);
         basket_s.setTexture(basket_t);
+        basket_s.setScale(3, 3);
         build_s.setTexture(build_t);
+        build_s.setScale(3, 3);
 
         tomato_s.setTexture(tomato_t);
+        tomato_s.setScale(3, 3);
         tomato_s.setPosition(-100, -100);
 
         balance_icon_s.setPosition(6, height-83);
         worker_icon_s.setPosition(6, height-183);
-        panel_s.setPosition((width-panel_s.getLocalBounds().width)/2, height-91);
+        panel_s.setOrigin(panel_s.getLocalBounds().width / 2, panel_s.getLocalBounds().height / 2);
+        panel_s.setPosition((width-panel_s.getLocalBounds().width)/2 + 35, height - 50);
 
         basket_s.setPosition((width-72)/2-134-67, height-76);
         shovel_s.setPosition((width-72)/2-67, height-76);
@@ -281,8 +302,8 @@ public:
         window->draw(button_redteam_txt);
         window->draw(button_blueteam_s);
         window->draw(button_blueteam_txt);
-        window->draw(resolution_s);
-        window->draw(resolution_txt);
+        //window->draw(resolution_s);
+        //window->draw(resolution_txt);
 
         window->draw(button_newgame_s);
         window->draw(logo_s);
